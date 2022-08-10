@@ -1,0 +1,5 @@
+Logfile [ clientLogfile.log ] opened [ 10-08-2022 ]
+[ 22:20:00 ] Network library started.
+[ 22:20:01 ] Attempt connection to server...
+[ 22:20:01 ] Connection request sent to server.
+[ 22:20:01 ] Shader [ 2DQuad ] linked and compiled ok.

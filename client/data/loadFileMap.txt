@@ -1,0 +1,3 @@
+englishLangFile#client/data/english.lang
+italianLangFile#client/data/italian.lang
+hexImage#client/data/hexImage.jpg

@@ -1,0 +1,6 @@
+serverStarted#SERVER Started update.
+signalInstalled#INFO : Signal handler installed.
+signalError#Unable to install signal handler.
+eventSystemError#ERROR : Unable to start the event system.
+networkLayerError#ERROR : Unable to start network layer.
+serverInfo#Server [ %s ] listening on port [ %i ].

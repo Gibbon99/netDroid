@@ -1,0 +1,3 @@
+clientStarted#CLIENT Started.
+clientWindowTitle#netDroid Client
+clientUnableCreateWindow#Unable to create the window [ %s ]

@@ -1,0 +1,6 @@
+serverStarted#SERVER Avviato
+signalInstalled#INFO : Gestore del segnale installato.
+signalError#Impossibile installare il gestore del segnale.
+eventSystemError#ERRORE: Impossibile avviare il sistema di eventi.
+networkLayerError#ERRORE: Impossibile avviare il livello di rete.
+serverInfo#Server [ %s ] in ascolto sulla porta [ %i ].

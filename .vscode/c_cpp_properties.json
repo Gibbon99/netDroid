@@ -1,0 +1,53 @@
+{
+    "configurations": [
+        {
+            "name": "Linux-Debug",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/common/hdr/"
+            ],
+            "defines": [
+                "Debug"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "${workspaceFolder}/common/hdr"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compileCommands": ""
+        },
+        {
+            "name": "Linux-Release",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/common/hdr/"
+            ],
+            "defines": [
+                "Release"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "${workspaceFolder}/common/hdr"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compileCommands": ""
+        }
+    ],
+    "version": 4
+}

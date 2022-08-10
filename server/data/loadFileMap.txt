@@ -1,0 +1,4 @@
+watchDirectory#server/data
+englishLangFile#server/data/english.lang
+italianLangFile#server/data/italian.lang
+testImage#server/data/DarkestHour.jpg
