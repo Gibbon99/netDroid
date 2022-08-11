@@ -81,6 +81,6 @@ private:
 	                            "uniform sampler2D renderedTexture;\n"
 	                            "\n"
 	                            "void main(){\n"
-	                            "color = texture( renderedTexture, UV).xyz ;\n"
+	                            "color = texture2D( renderedTexture, UV).xyz ;\n"
 	                            "}";
 };

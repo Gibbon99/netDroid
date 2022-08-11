@@ -1,8 +1,8 @@
 #pragma once
 
+#include "GL/glew.h"
 #include "openGL/c_glDebug.h"
 #include "defines.h"
-#include "GL/glew.h"
 #include "glm.hpp"
 
 #include <iostream>
@@ -25,9 +25,9 @@ extern droidClient  clientNetworkObject;
 extern networkState clientNetworkState;
 extern droidMessage clientMessage;
 extern droidWindow  clientWindow;
-
-extern droidTexture testTexture;
 extern droidGLFont  clientTestFont;
+
+extern std::map<std::string, droidTexture> clientTextures;
 
 extern CSimpleIniA iniFile;
 

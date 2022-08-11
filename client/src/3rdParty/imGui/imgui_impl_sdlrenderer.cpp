@@ -9,7 +9,7 @@
 // However, we understand it is a convenient choice to get an app started easily.
 
 // Implemented features:
-//  [X] Renderer: User texture binding. Use 'SDL_Texture*' as ImTextureID. Read the FAQ about ImTextureID!
+//  [X] Renderer: User textureID binding. Use 'SDL_Texture*' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Support for large meshes (64k+ vertices) with 16-bit indices.
 // Missing features:
 
@@ -176,7 +176,7 @@ void ImGui_ImplSDLRenderer_RenderDrawData(ImDrawData* draw_data)
                 const float* uv = (const float*)((const char*)(vtx_buffer + pcmd->VtxOffset) + IM_OFFSETOF(ImDrawVert, uv));
                 const int* color = (const int*)((const char*)(vtx_buffer + pcmd->VtxOffset) + IM_OFFSETOF(ImDrawVert, col));
 
-                // Bind texture, Draw
+                // Bind textureID, Draw
 				SDL_Texture* tex = (SDL_Texture*)pcmd->GetTexID();
                 SDL_RenderGeometryRaw(bd->SDLRenderer, tex,
                                       xy, (int)sizeof(ImDrawVert),
@@ -199,16 +199,16 @@ bool ImGui_ImplSDLRenderer_CreateFontsTexture()
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplSDLRenderer_Data* bd = ImGui_ImplSDLRenderer_GetBackendData();
 
-    // Build texture atlas
+    // Build textureID atlas
     unsigned char* pixels;
     int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bit (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);   // Load as RGBA 32-bit (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL textureID id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
-    // Upload texture to graphics system
+    // Upload textureID to graphics system
     bd->FontTexture = SDL_CreateTexture(bd->SDLRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width, height);
     if (bd->FontTexture == NULL)
     {
-        SDL_Log("error creating texture");
+        SDL_Log("error creating textureID");
         return false;
     }
     SDL_UpdateTexture(bd->FontTexture, NULL, pixels, 4 * width);

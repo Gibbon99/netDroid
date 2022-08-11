@@ -45,7 +45,7 @@ texture_atlas_new( const size_t width,
     texture_atlas_t *self = (texture_atlas_t *) malloc( sizeof(texture_atlas_t) );
 
     // We want a one pixel border around the whole atlas to avoid any artefact when
-    // sampling texture
+    // sampling textureID
     ivec3 node = {{1,1,width-2}};
 
     assert( (depth == 1) || (depth == 3) || (depth == 4) );
@@ -294,7 +294,7 @@ texture_atlas_clear( texture_atlas_t * self )
     vector_clear( self->nodes );
     self->used = 0;
     // We want a one pixel border around the whole atlas to avoid any artefact when
-    // sampling texture
+    // sampling textureID
     node.z = self->width-2;
 
     vector_push_back( self->nodes, &node );

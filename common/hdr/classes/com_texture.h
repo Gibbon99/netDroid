@@ -22,7 +22,7 @@ public:
 
 	bool loadFromDisk (const std::string &fileName);
 
-	bool convertToTexture (SDL_Surface *newSurface);
+	bool convertToTexture ();
 
 	int getWidth ();
 
@@ -34,6 +34,12 @@ public:
 
 	uint getTextureID ();
 
+	int getTextureState ();
+
+	int getSurfaceState ();
+
+	void setSurface(SDL_Surface *newSurface);
+
 private:
 
 	uint        textureState = NOT_LOADED;
@@ -43,7 +49,7 @@ private:
 	Uint32      format{};
 	int         access{};
 	SDL_Surface *surface{nullptr};
-	uint        texture{};
+	uint        textureID{};
 	std::string lastError{};
 	std::string fileName{};
 };

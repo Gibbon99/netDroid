@@ -1,5 +1,6 @@
 #include "../../hdr/system/c_graphics.h"
 #include "../../hdr/openGL/c_glWrap.h"
+#include "../../hdr/system/c_events.h"
 
 std::map<std::string, _droidShaders> droidShaders{};
 
@@ -10,46 +11,34 @@ bool init2DQuad (std::string newShaderName)
 
 	std::string vertShader = "#version 330\n"
 	                         "\n"
-	                         "//\n"
-	                         "// Draws a texture mapped 2d quad\n"
-	                         "//\n"
+	                         "uniform vec2 i_ScreenSize;\n"
+	                         "uniform sampler2D i_Texture0;\n"
 	                         "\n"
-	                         "uniform vec2       inScreenSize;\n"
-	                         "\n"
-	                         "layout (location = 0) in vec3     inPosition;\n"
-	                         "layout (location = 1) in vec2     inTextureCoords;\n"
+	                         "in vec3 i_Position;\n"
+	                         "in vec2 i_TextureCoords;\n"
 	                         "\n"
 	                         "out vec2 texCoord0;\n"
 	                         "\n"
 	                         "void main(void)\n"
 	                         "{\n"
-	                         "\ttexCoord0 = inTextureCoords;\n"
+	                         "\ttexCoord0 = i_TextureCoords;\n"
 	                         "\n"
-	                         "\tvec2 vertexPosition = inPosition.xy - inScreenSize.xy;\n"
-	                         "\tvertexPosition /= inScreenSize.xy;\n"
-	                         "\n"
+	                         "\tvec2 vertexPosition = i_Position.xy - i_ScreenSize.xy;\n"
+	                         "\tvertexPosition /= i_ScreenSize.xy;\n"
 	                         "\tgl_Position =  vec4(vertexPosition,0,1);\n"
 	                         "}";
 
 	std::string fragShader = "#version 330\n"
 	                         "\n"
-	                         "uniform sampler2D inTexture0;\n"
-	                         "uniform float gamma;\n"
+	                         "uniform sampler2D   i_Texture0;\n"
 	                         "\n"
-	                         "in vec2 texCoord0;\n"
-	                         "\n"
-	                         "layout(location = 0)    out     vec4        pixelColor;     // Relates to frameBuffer - writing to render buffer 0 - which is linked to the targetTexture as GL_COLOR_ATTACHMENT 0\n"
-	                         "\n"
-	                         "vec4 textureColor;\n"
+	                         "in      vec2        texCoord0;\n"
+	                         "out     vec4        outColor;\n"
 	                         "\n"
 	                         "void main()\n"
 	                         "{\n"
-	                         "\ttextureColor = texture2D(inTexture0, texCoord0.st);\n"
-	                         "\t//\n"
-	                         "\t// Apply Gamma setting to the texture colors\n"
-	                         "\tvec4 finalGamma = vec4 (1.0 / gamma);\n"
-	                         "\tfinalGamma.w = 1.0;\n"
-	                         "\tpixelColor = pow (textureColor, finalGamma);\n"
+	                         "    vec4 texColor = texture2D(i_Texture0, texCoord0.st);\n"
+	                         "    outColor = vec4(texColor.rgb, 1.0f);\n"
 	                         "}";
 
 	if (!tempShader.create (vertShader, fragShader, newShaderName))
@@ -67,10 +56,15 @@ bool init2DQuad (std::string newShaderName)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Convert a datapacket image to a surface ready for display on the client
+// Convert a datapacket image to an SDL_surface ready for display on the client
+// Generate an event to be run on the main thread to create the OpenGL texture ( needs main thread context )
 void c_convertPacketToSurface (dataPacket newDataPacket)
 //----------------------------------------------------------------------------------------------------------------------
 {
+	droidTexture    tempTexture;
+
+	clientTextures.insert(std::pair<std::string, droidTexture>(newDataPacket.testString, tempTexture));
+
 	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&newDataPacket.binaryData[0]), newDataPacket.binarySize);
 	if (nullptr == rw)
 	{
@@ -78,18 +72,17 @@ void c_convertPacketToSurface (dataPacket newDataPacket)
 		return;
 	}
 
-	auto tempSurface = IMG_LoadJPG_RW (rw);
-	if (nullptr == tempSurface)
+	clientTextures[newDataPacket.testString].setSurface(IMG_LoadJPG_RW (rw));
+	/*
+	if (nullptr == tempTexture.getSurface())
 	{
 		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Unable to load image from memory ; [ %s ]", SDL_GetError ()));
 		return;
 	}
+*/
 
-	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Client: Loaded JPG from binaryData."));
 
-//    testTexture.convertToTexture(clientWindow.getRenderer(),  tempSurface);
-
-	clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Created texture from surface W [ %i ] h [ %i ] format [ %i ] access [ %i ].", testTexture.getWidth (), testTexture.getHeight (), SDL_PIXELTYPE(testTexture.getFormat ()), testTexture.getAccess ()));
+	evt_sendEvent ( GAME_LOOP_EVENT, USER_EVENT_TEXTURE_UPLOAD, 0, 0, 0, glm::vec2{}, glm::vec2{}, newDataPacket.testString);
 }
 
 //-----------------------------------------------------------------------------
@@ -173,35 +166,36 @@ void c_draw2DQuad (glm::vec2 position, glm::vec2 quadSize, const std::string &wh
 		// Vertex coordinates buffer
 		GL_ASSERT (glBindBuffer (GL_ARRAY_BUFFER, buffers[0]));
 		GL_CHECK (glBufferData (GL_ARRAY_BUFFER, sizeof (quadVerts), quadVerts, GL_DYNAMIC_DRAW));
-		GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("inPosition")));
-		GL_CHECK (glVertexAttribPointer (droidShaders[whichShader].getLocation ("inPosition"), 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0)));
+		GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("i_Position")));
+		GL_CHECK (glVertexAttribPointer (droidShaders[whichShader].getLocation ("i_Position"), 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0)));
 		//
 		// Texture coordinates buffer
 		GL_ASSERT (glBindBuffer (GL_ARRAY_BUFFER, buffers[1]));
 		GL_CHECK (glBufferData (GL_ARRAY_BUFFER, sizeof (float) * 8, textureCoords, GL_DYNAMIC_DRAW));
-		GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("inTextureCoords")));
-		GL_CHECK (glVertexAttribPointer (droidShaders[whichShader].getLocation ("inTextureCoords"), 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0)));
+		GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("i_TextureCoords")));
+		GL_CHECK (glVertexAttribPointer (droidShaders[whichShader].getLocation ("i_TextureCoords"), 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET (0)));
 
 		initDone = false;
 	}
 
 	GL_CHECK (glUseProgram (gl_getShaderID (whichShader)));
 	//
-	// Bind texture if it's not already bound as current texture
+	// Bind textureID if it's not already bound as current textureID
 	GL_CHECK (glActiveTexture (GL_TEXTURE0));
 	GL_CHECK (glBindTexture (GL_TEXTURE_2D, whichTexture));
 
-	GL_CHECK (glUniform1i (droidShaders[whichShader].getLocation ("inTexture0"), 0));
+	GL_CHECK (glUniform1i (droidShaders[whichShader].getLocation ("i_Texture0"), 0));
 
 	GL_CHECK (glBindVertexArray (vao));
 	//
 	// Enable attribute to hold vertex information
-	GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("inPosition")));
-	GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("inTextureCoords")));
+	GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("i_Position")));
+	GL_CHECK (glEnableVertexAttribArray (droidShaders[whichShader].getLocation ("i_TextureCoords")));
 
-	auto MVP = glm::ortho (0.0f, static_cast<float>(clientWindow.getWidth ()), 0.0f, static_cast<float>(clientWindow.getHeight ())) * (glm::mat4 (1.0f) * glm::mat4 (1.0f));
+//	auto MVP = glm::ortho (0.0f, static_cast<float>(clientWindow.getWidth ()), 0.0f, static_cast<float>(clientWindow.getHeight ())) * (glm::mat4 (1.0f) * glm::mat4 (1.0f));
+//	GL_CHECK (glUniformMatrix4fv (droidShaders[whichShader].getLocation ("MVP_Matrix"), 1, false, glm::value_ptr (MVP)));
 
-	GL_CHECK (glUniformMatrix4fv (droidShaders[whichShader].getLocation ("MVP_Matrix"), 1, false, glm::value_ptr (MVP)));
+	GL_CHECK ( glUniform2f (droidShaders[whichShader].getLocation("i_ScreenSize"), (float)clientWindow.getWidth () / 4, (float)clientWindow.getHeight () / 4));
 
 	GL_CHECK (glDrawArrays (GL_TRIANGLE_FAN, 0, 4));
 

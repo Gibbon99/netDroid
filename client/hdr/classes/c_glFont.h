@@ -15,7 +15,7 @@ public:
 
 	~droidGLFont ();
 
-	bool init (std::string fontName, float fontSize, glm::vec2 textureSize);
+	bool init (const std::string& fontName, float fontSize, glm::vec2 textureSize);
 
 	std::string returnLastError ();
 
@@ -56,10 +56,10 @@ private:
 	                         " * Distributed under the OSI-approved BSD 2-Clause License.  See accompanying\n"
 	                         " * file `LICENSE` for more details.\n"
 	                         " */\n"
-	                         "uniform sampler2D texture;\n"
+	                         "uniform sampler2D textureID;\n"
 	                         "void main()\n"
 	                         "{\n"
-	                         "    float a = texture2D(texture, gl_TexCoord[0].xy).r;\n"
+	                         "    float a = texture2D(textureID, gl_TexCoord[0].xy).r;\n"
 	                         "    gl_FragColor = vec4(gl_Color.rgb, gl_Color.a*a);\n"
 	                         "}";
 };

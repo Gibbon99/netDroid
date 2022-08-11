@@ -32,12 +32,12 @@ namespace ftgl {
 #endif
 
 /**
- * @file   texture-atlas.h
+ * @file   textureID-atlas.h
  * @author Nicolas Rougier (Nicolas.Rougier@inria.fr)
  *
- * @defgroup texture-atlas Texture atlas
+ * @defgroup textureID-atlas Texture atlas
  *
- * A texture atlas is used to pack several small regions into a single texture.
+ * A textureID atlas is used to pack several small regions into a single textureID.
  *
  * The actual implementation is based on the article by Jukka Jylänki : "A
  * Thousand Ways to Pack the Bin - A Practical Approach to Two-Dimensional
@@ -49,7 +49,7 @@ namespace ftgl {
  *
  * Example Usage:
  * @code
- * #include "texture-atlas.h"
+ * #include "textureID-atlas.h"
  *
  * ...
  *
@@ -71,7 +71,7 @@ namespace ftgl {
 
 
 /**
- * A texture atlas is used to pack several small regions into a single texture.
+ * A textureID atlas is used to pack several small regions into a single textureID.
  */
 typedef struct texture_atlas_t
 {
@@ -81,17 +81,17 @@ typedef struct texture_atlas_t
     vector_t * nodes;
 
     /**
-     *  Width (in pixels) of the underlying texture
+     *  Width (in pixels) of the underlying textureID
      */
     size_t width;
 
     /**
-     * Height (in pixels) of the underlying texture
+     * Height (in pixels) of the underlying textureID
      */
     size_t height;
 
     /**
-     * Depth (in bytes) of the underlying texture
+     * Depth (in bytes) of the underlying textureID
      */
     size_t depth;
 
@@ -126,12 +126,12 @@ typedef struct texture_atlas_t
 
 
 /**
- * Creates a new empty texture atlas.
+ * Creates a new empty textureID atlas.
  *
  * @param   width   width of the atlas
  * @param   height  height of the atlas
  * @param   depth   bit depth of the atlas
- * @return          a new empty texture atlas.
+ * @return          a new empty textureID atlas.
  *
  */
   texture_atlas_t *
@@ -141,9 +141,9 @@ typedef struct texture_atlas_t
 
 
 /**
- *  Deletes a texture atlas.
+ *  Deletes a textureID atlas.
  *
- *  @param self a texture atlas structure
+ *  @param self a textureID atlas structure
  *
  */
   void
@@ -153,7 +153,7 @@ typedef struct texture_atlas_t
 /**
  *  Allocate a new region in the atlas.
  *
- *  @param self   a texture atlas structure
+ *  @param self   a textureID atlas structure
  *  @param width  width of the region to allocate
  *  @param height height of the region to allocate
  *  @return       Coordinates of the allocated region
@@ -168,7 +168,7 @@ typedef struct texture_atlas_t
 /**
  *  Upload data to the specified atlas region.
  *
- *  @param self   a texture atlas structure
+ *  @param self   a textureID atlas structure
  *  @param x      x coordinate the region
  *  @param y      y coordinate the region
  *  @param width  width of the region
@@ -189,15 +189,15 @@ typedef struct texture_atlas_t
 /**
  *  Remove all allocated regions from the atlas.
  *
- *  @param self   a texture atlas structure
+ *  @param self   a textureID atlas structure
  */
   void
   texture_atlas_clear( texture_atlas_t * self );
 
 /**
- *  Enlarge a texture atlas
+ *  Enlarge a textureID atlas
  *
- *  @param self       a texture atlas structure
+ *  @param self       a textureID atlas structure
  *  @param width_new  new width
  *  @param height_new new height
  */

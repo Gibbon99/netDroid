@@ -1,6 +1,5 @@
 #include "../../hdr/classes/c_window.h"
 #include "../../hdr/main.h"
-#include "com_message.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -108,8 +107,8 @@ bool droidWindow::createFrameBuffer ()
 	glGenTextures (1, &frameBufferTextureID);
 	glBindTexture (GL_TEXTURE_2D, frameBufferTextureID);
 	//
-	// Create an empty texture
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, m_windowWidth, m_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	// Create an empty textureID
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, m_windowWidth, m_windowHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	//
 	// Set filtering
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -133,7 +132,7 @@ bool droidWindow::createFrameBuffer ()
 		switch (checkStatus)
 		{
 			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-				lastError = "Not all framebuffer attachment points are framebuffer attachment complete. This means that at least one attachment point with a renderbuffer or texture attached has its attached object no longer in existence or has an attached image with a width or height of zero, or the color attachment point has a non-color-renderable image attached, or the depth attachment point has a non-depth-renderable image attached, or the stencil attachment point has a non-stencil-renderable image attached.";
+				lastError = "Not all framebuffer attachment points are framebuffer attachment complete. This means that at least one attachment point with a renderbuffer or textureID attached has its attached object no longer in existence or has an attached image with a width or height of zero, or the color attachment point has a non-color-renderable image attached, or the depth attachment point has a non-depth-renderable image attached, or the stencil attachment point has a non-stencil-renderable image attached.";
 				break;
 
 			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
@@ -282,7 +281,10 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		SDL_GL_SetSwapInterval (1);
 	}
 
-	createFrameBuffer ();
+	if (!createFrameBuffer ())
+	{
+		return false;
+	}
 
 	/*
 	int value = 0;
@@ -394,11 +396,11 @@ void droidWindow::presentFrame ()
 	// Use the shader for the fullscreen framebuffer
 	glUseProgram (fboShaderProgramID);
 	//
-	// Bind the framebuffer texture to unit 0
+	// Bind the framebuffer textureID to unit 0
 	glActiveTexture (GL_TEXTURE0);
 	glBindTexture (GL_TEXTURE_2D, frameBufferTextureID);
 	//
-	// Set the fragment shader to use texture 0
+	// Set the fragment shader to use textureID 0
 	glUniform1i (fboTextureShaderID, 0);
 
 	glBindVertexArray (fboVAO_ID);

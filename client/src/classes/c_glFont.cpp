@@ -4,7 +4,7 @@
 typedef struct
 {
 	float x, y, z;    // position
-	float s, t;       // texture
+	float s, t;       // textureID
 	float r, g, b, a; // color
 } vertex_t;
 
@@ -39,8 +39,8 @@ float droidGLFont::getHeight ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Create a texture atlas from passed in fontName and size
-bool droidGLFont::init (std::string fontName, float fontSize, glm::vec2 textureSize)
+// Create a textureID atlas from passed in fontName and size
+bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 textureSize)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	GLuint vs, fs;
@@ -54,7 +54,7 @@ bool droidGLFont::init (std::string fontName, float fontSize, glm::vec2 textureS
 	font   = texture_font_new_from_file (atlas, fontSize, fontName.c_str ());
 	if (nullptr == font)
 	{
-		lastError = sys_getString ("Unable to create texture font. Check fileName [ %s ]", fontName.c_str ());
+		lastError = sys_getString ("Unable to create textureID font. Check fileName [ %s ]", fontName.c_str ());
 		return false;
 	}
 	height = font->height;
@@ -62,7 +62,7 @@ bool droidGLFont::init (std::string fontName, float fontSize, glm::vec2 textureS
 	missedGlyphs = texture_font_load_glyphs (font, codePoints.c_str ());
 	if (missedGlyphs > 0)
 	{
-		lastError = sys_getString ("Unable to render all glyphs. Missing [ %i ] from texture atlas. Texture size is too small.", missedGlyphs);
+		lastError = sys_getString ("Unable to render all glyphs. Missing [ %i ] from textureID atlas. Texture size is too small.", missedGlyphs);
 		return false;
 	}
 
@@ -212,7 +212,7 @@ void droidGLFont::render (glm::mat4 MVPMatrix)
 		glActiveTexture (GL_TEXTURE0);
 		glBindTexture (GL_TEXTURE_2D, atlas->id);
 
-		glUniform1i (glGetUniformLocation (shaderProgramID, "texture"), 0);
+		glUniform1i (glGetUniformLocation (shaderProgramID, "textureID"), 0);
 		glUniformMatrix4fv (glGetUniformLocation (shaderProgramID, "MVP"), 1, 0, glm::value_ptr (MVPMatrix));
 		vertex_buffer_render (buffer, GL_TRIANGLES);
 	}

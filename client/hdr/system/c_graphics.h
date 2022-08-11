@@ -10,3 +10,6 @@ extern std::map<std::string, _droidShaders> droidShaders;
 void c_convertPacketToSurface(dataPacket newDataPacket);
 
 bool init2DQuad (std::string newShaderName);
+
+// Draw a 2D quad - uses ortho matrix to draw - screen pixel coordinates
+void c_draw2DQuad (glm::vec2 position, glm::vec2 quadSize, const std::string &whichShader, GLuint whichTexture, float textureCoords[]);

@@ -17,8 +17,8 @@
 
 #ifdef IMPLEMENT_FREETYPE_GL
 #include "platform.c"
-#include "texture-atlas.c"
-#include "texture-font.c"
+#include "textureID-atlas.c"
+#include "textureID-font.c"
 #include "vector.c"
 #include "utf8-utils.c"
 #include "distance-field.c"

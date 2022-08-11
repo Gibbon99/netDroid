@@ -746,7 +746,7 @@ texture_font_load_glyph_gi( texture_font_t * self,
             return 1;
         }
     }
-    // WARNING: We use texture-atlas depth to guess if user wants
+    // WARNING: We use textureID-atlas depth to guess if user wants
     //          LCD subpixel rendering
 
     if( self->rendermode != RENDER_NORMAL && self->rendermode != RENDER_SIGNED_DISTANCE_FIELD )

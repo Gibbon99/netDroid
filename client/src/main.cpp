@@ -4,6 +4,7 @@
 #include "../hdr/system/c_shutdown.h"
 #include "com_language.h"
 #include "../hdr/system/c_graphics.h"
+#include "../hdr/system/c_gameEvents.h"
 
 droidTime     gameTime{};
 droidClient   clientNetworkObject{};
@@ -12,6 +13,8 @@ droidWindow   clientWindow (800, 600);
 droidLanguage clientLanguage{};
 networkState  clientNetworkState{};
 droidGLFont   clientTestFont{};
+
+std::map<std::string, droidTexture> clientTextures{};
 
 droidTexture testTexture{};
 
@@ -50,6 +53,7 @@ int main (int, char **)
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getLinkedVersion ().c_str ()));
 
+	c_createGameLoopMutex();
 	startClientEventNetwork ();
 	startNetworkStateThread ();
 	Uint32 previousTime = gameTime.getTicks ();

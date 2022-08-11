@@ -1,5 +1,6 @@
 #include "../../hdr/system/c_renderClientFrame.h"
 #include "../../hdr/main.h"
+#include "../../hdr/system/c_graphics.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -8,6 +9,16 @@ void renderFrame()
 //----------------------------------------------------------------------------------------------------------------------
 {
     clientWindow.startFrame();
+
+	float texCoords[] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+	glm::vec2 renderPosition{0,0};
+	glm::vec2 textureSize{};
+
+	textureSize.x = clientTextures["testImage"].getWidth();
+	textureSize.y = clientTextures["testImage"].getHeight();
+
+	if (clientTextures["testImage"].getTextureState () == TEXTURE_LOADED)
+		c_draw2DQuad (renderPosition, textureSize, "2DQuad", clientTextures["testImage"].getTextureID(), texCoords);
 
 	clientTestFont.addText (glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, glm::vec2{clientWindow.getWidth() - clientTestFont.getTextWidth("Here is some new text."),50}, "Here is some new text.");
 	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{50,150}, "and a second line from the same buffer !@#.");

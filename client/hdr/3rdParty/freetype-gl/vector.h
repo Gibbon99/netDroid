@@ -25,8 +25,8 @@ namespace ftgl {
  * @defgroup vector Vector
  *
  * The vector structure and accompanying functions loosely mimic the STL C++
- * vector class. It is used by @ref texture-atlas (for storing nodes), @ref
- * texture-font (for storing glyphs) and @ref font-manager (for storing fonts).
+ * vector class. It is used by @ref textureID-atlas (for storing nodes), @ref
+ * textureID-font (for storing glyphs) and @ref font-manager (for storing fonts).
  * More information at http://www.cppreference.com/wiki/container/vector/start
  *
  * <b>Example Usage</b>:

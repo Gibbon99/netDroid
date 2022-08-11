@@ -215,9 +215,9 @@ typedef enum Align
   text_buffer_new( );
 
 /**
- * Deletes texture buffer and its associated vertex buffer.
+ * Deletes textureID buffer and its associated vertex buffer.
  *
- * @param  self  texture buffer to delete
+ * @param  self  textureID buffer to delete
  *
  */
   void

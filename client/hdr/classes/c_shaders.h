@@ -15,6 +15,8 @@ public:
 
 	bool setUniformVariable (int location, int setTo);
 
+	bool setUniformVariable (int location, float setTo);
+
 	bool setUniformVariable3f (int location, float v1, float v2, float v3);
 
 	bool setUniformVariable4f (int location, float v1, float v2, float v3, float v4);

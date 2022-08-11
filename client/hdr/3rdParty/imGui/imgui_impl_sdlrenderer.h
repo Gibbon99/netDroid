@@ -9,7 +9,7 @@
 // However, we understand it is a convenient choice to get an app started easily.
 
 // Implemented features:
-//  [X] Renderer: User texture binding. Use 'SDL_Texture*' as ImTextureID. Read the FAQ about ImTextureID!
+//  [X] Renderer: User textureID binding. Use 'SDL_Texture*' as ImTextureID. Read the FAQ about ImTextureID!
 //  [X] Renderer: Support for large meshes (64k+ vertices) with 16-bit indices.
 
 #pragma once

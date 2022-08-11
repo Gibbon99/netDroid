@@ -29,6 +29,17 @@ GLint _droidShaders::isCompiled ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+// Set the value of a variable in a shader - single FLOAT version
+bool _droidShaders::setUniformVariable (int location, float setTo)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	GL_CHECK(glUniform1f (location, setTo));
+
+	return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 // Set the value of a variable in a shader - single INT version
 bool _droidShaders::setUniformVariable (int location, int setTo)
 //----------------------------------------------------------------------------------------------------------------------

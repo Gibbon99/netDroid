@@ -7,8 +7,8 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Free the memory used by the texture and the surface
-droidTexture::~droidTexture()
+// Free the memory used by the textureID and the surface
+droidTexture::~droidTexture ()
 //----------------------------------------------------------------------------------------------------------------------
 {
 	if (surface != nullptr)
@@ -36,49 +36,50 @@ bool droidTexture::loadFromDisk (const std::string &newFileName)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Convert a loaded surface image to an openGL texture
-bool droidTexture::convertToTexture (SDL_Surface *newSurface)
+// Convert a loaded surface image to an openGL textureID
+bool droidTexture::convertToTexture ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	textureState = TEXTURE_LOADING;
-	surfaceState = SURFACE_LOADING;
-
-	auto colorCount = newSurface->format->BytesPerPixel;
+	auto colorCount = surface->format->BytesPerPixel;
 	if (colorCount == 4)
 	{
-		if (newSurface->format->Rmask == 0x000000ff)
+		if (surface->format->Rmask == 0x000000ff)
 			format = GL_RGBA;
 		else
 			format = GL_BGRA;
 	}
 	else if (colorCount == 3)
 	{
-		if (newSurface->format->Rmask == 0x000000ff)
+		if (surface->format->Rmask == 0x000000ff)
 			format = GL_RGB;
 		else
 			format = GL_BGR;
 	}
 
-	width  = newSurface->w;
-	height = newSurface->h;
+	width  = surface->w;
+	height = surface->h;
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, newSurface->pixels);
+	glGenTextures (1, &textureID);
+	if (GL_INVALID_VALUE == textureID)  // Need to get the error first before checking glGetError() ?
+	{
+		lastError = "Unable to generate a texture name.";
+		return false;
+	}
+	glBindTexture (GL_TEXTURE_2D, textureID);
+	glTexImage2D (GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, surface->pixels);
 	//
 	// Set filtering
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	textureState = TEXTURE_LOADED;
-	surfaceState = SURFACE_LOADED;
 
 	return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Return the texture width
+// Return the textureID width
 int droidTexture::getWidth ()
 //----------------------------------------------------------------------------------------------------------------------
 {
@@ -87,7 +88,7 @@ int droidTexture::getWidth ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Return the texture height
+// Return the textureID height
 int droidTexture::getHeight ()
 //----------------------------------------------------------------------------------------------------------------------
 {
@@ -96,7 +97,7 @@ int droidTexture::getHeight ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Return the texture format
+// Return the textureID format
 int droidTexture::getFormat ()
 //----------------------------------------------------------------------------------------------------------------------
 {
@@ -105,7 +106,7 @@ int droidTexture::getFormat ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Return the texture access
+// Return the textureID access
 int droidTexture::getAccess ()
 //----------------------------------------------------------------------------------------------------------------------
 {
@@ -114,9 +115,41 @@ int droidTexture::getAccess ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+// Return if the textureID is ready to use or not
+int droidTexture::getTextureState ()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return textureState;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Return if the SDL_Surface has been loaded is ready to use or not
+int droidTexture::getSurfaceState ()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return surfaceState;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 // Return the textureID
 uint droidTexture::getTextureID ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	return texture;
+	return textureID;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Set the SDL_surface pointer
+void droidTexture::setSurface (SDL_Surface *newSurface)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	surface = std::move(newSurface); //SDL_ConvertSurface (newSurface, newSurface->format, 0);
+
+	printf("*** Bytes per pixel after assign : %i \n", surface->format->BytesPerPixel);
+
+	surfaceState = SURFACE_LOADED;
+	// if textureloaded - free it so it can be reloaded
 }
