@@ -12,10 +12,10 @@
 extern int networkFetchDelayMS;
 
 // Called at startup to register the network processing thread and function
-bool startClientEventNetwork();
+bool c_startNetworkMonitor();
 
 // Add a newly received event from the network to the processing queue
-void addClientNetworkEvent(ENetEvent newNetworkEvent);
+void c_addNetworkEvent(ENetEvent newNetworkEvent);
 
 // Process a data packet received from the server
-void processPacketFromServer (ENetPacket *newDataPacket, size_t dataSize);
+void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize);

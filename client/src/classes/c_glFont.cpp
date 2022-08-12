@@ -1,12 +1,12 @@
 #include "../../hdr/classes/c_glFont.h"
 #include "com_util.h"
 
-typedef struct
+struct vertex_t
 {
 	float x, y, z;    // position
 	float s, t;       // textureID
 	float r, g, b, a; // color
-} vertex_t;
+};
 
 std::string codePoints = " ~!@#$%^&*()_+1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./QWERTYUIOP{}|ASDFGHJKL:ZXCVBNM<>?\"";
 
@@ -45,9 +45,8 @@ bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 t
 {
 	GLuint vs, fs;
 	GLint  isCompiled = GL_FALSE;
-	size_t missedGlyphs{};
 
-	atlas = texture_atlas_new (textureSize.x, textureSize.y, 1);
+	atlas = texture_atlas_new (static_cast<size_t>(textureSize.x), static_cast<size_t>(textureSize.y), 1);
 
 	//	texture_font_new_from_memory ()     TODO - Get font file from server - load from memory
 
@@ -59,7 +58,7 @@ bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 t
 	}
 	height = font->height;
 
-	missedGlyphs = texture_font_load_glyphs (font, codePoints.c_str ());
+	auto missedGlyphs = texture_font_load_glyphs (font, codePoints.c_str ());
 	if (missedGlyphs > 0)
 	{
 		lastError = sys_getString ("Unable to render all glyphs. Missing [ %i ] from textureID atlas. Texture size is too small.", missedGlyphs);
@@ -72,7 +71,7 @@ bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 t
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, atlas->width, atlas->height, 0, GL_RED, GL_UNSIGNED_BYTE, atlas->data);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, static_cast<GLsizei>(atlas->width), static_cast<GLsizei>(atlas->height), 0, GL_RED, GL_UNSIGNED_BYTE, atlas->data);
 
 	vertex_t vertices[4] = {{0,             0,             0, 0, 1, 0, 0, 0, 1},
 	                        {0,             textureSize.y, 0, 0, 0, 0, 0, 0, 1},
@@ -80,7 +79,7 @@ bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 t
 	                        {textureSize.x, 0,             0, 1, 1, 0, 0, 0, 1}};
 
 	GLuint indices[6] = {0, 1, 2, 0, 2, 3};
-	buffer = vertex_buffer_new ("vertex:3f,tex_coord:2f,color:4f");
+	buffer = vertex_buffer_new ("i_Position:3f,i_TextureCoords:2f,i_Color:4f");
 	vertex_buffer_push_back (buffer, vertices, 4, indices, 6);
 
 	shaderProgramID = glCreateProgram ();
@@ -183,8 +182,8 @@ void droidGLFont::addText (glm::vec4 color, glm::vec2 position, const std::strin
 			}
 
 			position.x += kerning;
-			int x0 = (int) (position.x + glyph->offset_x);
-			int y0 = (int) (position.y + glyph->offset_y);
+			int x0 = (int) (position.x + static_cast<float>(glyph->offset_x));
+			int y0 = (int) (position.y + static_cast<float>(glyph->offset_y));
 			int x1 = (int) (x0 + glyph->width);
 			int y1 = (int) (y0 - glyph->height);
 
@@ -212,7 +211,7 @@ void droidGLFont::render (glm::mat4 MVPMatrix)
 		glActiveTexture (GL_TEXTURE0);
 		glBindTexture (GL_TEXTURE_2D, atlas->id);
 
-		glUniform1i (glGetUniformLocation (shaderProgramID, "textureID"), 0);
+		glUniform1i (glGetUniformLocation (shaderProgramID, "i_texture0"), 0);
 		glUniformMatrix4fv (glGetUniformLocation (shaderProgramID, "MVP"), 1, 0, glm::value_ptr (MVPMatrix));
 		vertex_buffer_render (buffer, GL_TRIANGLES);
 	}

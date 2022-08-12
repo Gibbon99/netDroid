@@ -1,6 +1,43 @@
 #include <execinfo.h>
 #include "../../hdr/openGL/c_glDebug.h"
 
+//-----------------------------------------------------------------------------
+//
+// Return the errorNum as a readable string
+std::string getGLErrorString (int errorNum)
+//-----------------------------------------------------------------------------
+{
+	switch (errorNum)
+	{
+		case GL_INVALID_ENUM:
+			return "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument.";
+			break;
+
+		case GL_INVALID_VALUE:
+			return "GL_INVALID_VALUE: A numeric argument is out of range.";
+			break;
+
+		case GL_INVALID_OPERATION:
+			return "GL_INVALID_OPERATION: The specified operation is not allowed in the current state.";
+			break;
+
+		case GL_OUT_OF_MEMORY:
+			return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command.";
+			break;
+
+		case GL_STACK_UNDERFLOW:
+			return "An attempt has been made to perform an operation that would cause an internal stack to underflow.";
+			break;
+
+		case GL_STACK_OVERFLOW:
+			return "An attempt has been made to perform an operation that would cause an internal stack to overflow";
+			break;
+
+		default:
+			return "Unknown error.";
+			break;
+	}
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -12,28 +49,36 @@ void gl_getAllGLErrors (int errorNum, const char *calledFrom, int line)
 
 	while (errorNum != GL_NO_ERROR)
 	{
-		clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("OpenGL Error: [ %i ] - [ %i ] - [ %s ]", line, errorNum, calledFrom));
+		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("OpenGL Error: [ %i ] - [ %i ] - [ %s ]", line, errorNum, calledFrom));
 
 		switch (errorNum)
 		{
 			case GL_INVALID_ENUM:
-				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("[ %s ]", "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument."));
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "GL_INVALID_ENUM: An unacceptable value is specified for an enumerated argument."));
 				break;
 
 			case GL_INVALID_VALUE:
-			clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("[ %s ]", "GL_INVALID_VALUE: A numeric argument is out of range."));
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "GL_INVALID_VALUE: A numeric argument is out of range."));
 				break;
 
 			case GL_INVALID_OPERATION:
-				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("[ %s ]", "GL_INVALID_OPERATION: The specified operation is not allowed in the current state."));
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "GL_INVALID_OPERATION: The specified operation is not allowed in the current state."));
 				break;
 
 			case GL_OUT_OF_MEMORY:
-				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("[ %s ]", "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command."));
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "GL_OUT_OF_MEMORY: There is not enough memory left to execute the command."));
+				break;
+
+			case GL_STACK_UNDERFLOW:
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "An attempt has been made to perform an operation that would cause an internal stack to underflow."));
+				break;
+
+			case GL_STACK_OVERFLOW:
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "An attempt has been made to perform an operation that would cause an internal stack to overflow."));
 				break;
 
 			default:
-				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("[ %s ]", "Unknown error."));
+				clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("[ %s ]", "Unknown error."));
 				break;
 		}
 

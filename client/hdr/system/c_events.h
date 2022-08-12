@@ -1,37 +1,42 @@
 #pragma once
 
-#include "c_events.h"
-#include "vec2.hpp"
-
 #include <string>
 #include <queue>
 #include <SDL_events.h>
+#include "vec2.hpp"
+#include "enet/enet.h"
+#include "../../hdr/main.h"
+#include "../../hdr/system/c_gameEvents.h"
 
-enum myEvents
+enum class EventType
 {
-	GAME_LOOP_EVENT = 0,
-	USER_EVENT_TEXTURE_UPLOAD
+	EVENT_GAME_LOOP = 0
 };
 
-typedef struct
+enum class EventAction
 {
-	unsigned int eventType;
-	int          eventAction;
-	int          data1;
-	int          data2;
-	int          data3;
-	glm::vec2    vec2_1;
-	glm::vec2    vec2_2;
-	std::string  eventString;
-} _myEventData;
+	ACTION_UPLOAD_TEXTURE = 0
+};
 
-extern std::queue<_myEventData> gameEventQueue;
+struct myEventData_
+{
+	EventType   eventType;
+	EventAction eventAction;
+	int         data1;
+	int         data2;
+	int         data3;
+	glm::vec2   vec2_1;
+	glm::vec2   vec2_2;
+	std::string eventString;
+};
+
+extern std::queue<myEventData_> gameEventQueue;
 
 // Create a custom event to be sent
-void evt_sendEvent ( uint type, int action, int data1, int data2, int data3, const glm::vec2 vec2_1, const glm::vec2 vec2_2, std::string textString);
+void c_addEventToQueue (EventType type, EventAction action, int data1, int data2, int data3, glm::vec2 vec2_1, glm::vec2 vec2_2, std::string textString);
 
 // Handle SDL events from main loop
-void handleEvents(SDL_Event event);
+void c_handleEvents (SDL_Event event);
 
 // Get any network events and put onto processing queue
-void getClientNetworkEvents ();
+void c_getNetworkEvents ();

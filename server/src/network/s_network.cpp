@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include "../../hdr/network/s_network.h"
 #include "com_globals.h"
-#include "../../hdr/system/peers.h"
+#include "../../hdr/system/s_peers.h"
 #include "../../hdr/main.h"
 #include "../../hdr/system/s_shutdown.h"
 
@@ -203,4 +203,13 @@ void serverSendImageToClient (ENetPeer *peerInfo, std::string imageName)
 	serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString("Sent image file [ %s ] size [ %i ]", newPacket.testString.c_str(), newPacket.binaryData.size()));
 
 	com_sendDataToPeer (peerInfo, newPacket);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Send a shader to the client
+void s_sendShaderToClient (ENetPeer *peerInfo, std::string shaderName)
+//----------------------------------------------------------------------------------------------------------------------
+{
+
 }

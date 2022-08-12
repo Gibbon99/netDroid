@@ -19,26 +19,28 @@ class droidTexture
 public:
 
 	~droidTexture ();
+	droidTexture ();
+
+	void makeCheckTex(int textureSize);
 
 	bool loadFromDisk (const std::string &fileName);
-
 	bool convertToTexture ();
+	void flipSurface();
 
 	int getWidth ();
-
 	int getHeight ();
-
-	int getAccess ();
-
-	int getFormat ();
-
+	Uint32 getFormat ();
+	uint getTextureState ();
+	uint getSurfaceState ();
 	uint getTextureID ();
+	SDL_Surface *getSurface();
+	std::string getLastError();
 
-	int getTextureState ();
+	void setTextureState (int newTextureState);
+	void setSurfaceState (int newSurfaceState);
+	void setName(std::string newName);
 
-	int getSurfaceState ();
-
-	void setSurface(SDL_Surface *newSurface);
+	void setSurface (SDL_Surface *newSurface, bool doFlipSurface);
 
 private:
 
@@ -47,9 +49,9 @@ private:
 	int         width{};
 	int         height{};
 	Uint32      format{};
-	int         access{};
 	SDL_Surface *surface{nullptr};
 	uint        textureID{};
 	std::string lastError{};
 	std::string fileName{};
+	std::string imageName{};
 };

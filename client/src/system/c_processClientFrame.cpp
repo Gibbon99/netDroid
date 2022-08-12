@@ -13,12 +13,12 @@ void processClientFrame ()
 {
 	SDL_Event evt{};
 
-    getClientNetworkEvents ();
+	c_getNetworkEvents ();
 	c_processGameEventQueue();
 
 	while (SDL_PollEvent(&evt) > 0)
 	{
-		handleEvents(evt);
+		c_handleEvents (evt);
 	}
 }
 

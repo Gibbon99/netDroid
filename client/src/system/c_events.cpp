@@ -1,15 +1,12 @@
 #include "../../hdr/system/c_events.h"
-#include "enet/enet.h"
-#include "../../hdr/main.h"
-#include "../../hdr/system/c_gameEvents.h"
 
 //------------------------------------------------------------------------
 //
-// Create a custom event to be sent
-void evt_sendEvent ( uint type, int action, int data1, int data2, int data3, const glm::vec2 vec2_1, const glm::vec2 vec2_2, std::string textString )
+// Create a custom event and add it to the relevant queue
+void c_addEventToQueue (EventType type, EventAction action, int data1, int data2, int data3, const glm::vec2 vec2_1, const glm::vec2 vec2_2, std::string textString )
 //------------------------------------------------------------------------
 {
-	_myEventData eventData;
+	myEventData_ eventData;
 
 	eventData.eventType   = type;
 	eventData.eventAction = action;
@@ -22,7 +19,7 @@ void evt_sendEvent ( uint type, int action, int data1, int data2, int data3, con
 
 	switch (type)
 	{
-		case GAME_LOOP_EVENT:
+		case EventType::EVENT_GAME_LOOP:
 			if (SDL_LockMutex (mainLoopMutex) == 0)
 			{
 				gameEventQueue.push (eventData);
@@ -37,7 +34,7 @@ void evt_sendEvent ( uint type, int action, int data1, int data2, int data3, con
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Handle SDL events from main loop
-void handleEvents(SDL_Event event)
+void c_handleEvents(SDL_Event event)
 //----------------------------------------------------------------------------------------------------------------------
 {
 //	ImGui_ImplSDL2_ProcessEvent (&event);
@@ -67,7 +64,7 @@ void handleEvents(SDL_Event event)
 //------------------------------------------------------------------------------------------------------------------
 //
 // Get any network events and put onto processing queue
-void getClientNetworkEvents ()
+void c_getNetworkEvents ()
 //------------------------------------------------------------------------------------------------------------------
 {
 	ENetEvent event;
@@ -79,7 +76,7 @@ void getClientNetworkEvents ()
 
 	if (returnCode > 0)
 	{
-		addClientNetworkEvent (event);
+		c_addNetworkEvent (event);
 		return;
 	}
 

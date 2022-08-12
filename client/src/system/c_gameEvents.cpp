@@ -3,7 +3,7 @@
 #include "../../hdr/system/c_events.h"
 
 //Add game event queue
-std::queue<_myEventData> gameEventQueue;
+std::queue<myEventData_> gameEventQueue;
 
 SDL_mutex *mainLoopMutex;
 
@@ -26,10 +26,10 @@ bool c_createGameLoopMutex()
 //
 // Handle the events that need to be run in the main loop
 // eg: Changes to physics world, upload GL textures
-int c_processGameEventQueue()
+void c_processGameEventQueue()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	_myEventData tempEventData;
+	myEventData_ tempEventData;
 
 	if ( !gameEventQueue.empty() )
 	{
@@ -42,23 +42,16 @@ int c_processGameEventQueue()
 
 		switch ( tempEventData.eventAction )
 		{
-			case USER_EVENT_TEXTURE_UPLOAD:
-				clientTextures[tempEventData.eventString].convertToTexture();
+			case EventAction::ACTION_UPLOAD_TEXTURE:
+				if (!clientTextures[tempEventData.eventString].convertToTexture())
+				{
+				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_CONSOLE, sys_getString("%s", clientTextures[tempEventData.eventString].getLastError().c_str()));
+				return;
+				}
 				break;
 
 			default:
 				break;
 		}
 	}
-	return 0;
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Convert SDL Surfce to OpenGL texture
-bool c_convertSurfaceToTexture ()
-//----------------------------------------------------------------------------------------------------------------------
-{
-
 }

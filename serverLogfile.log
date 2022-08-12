@@ -1,5 +1,4 @@
-Logfile [ serverLogfile.log ] opened [ 07-08-2022 ]
-[ 17:08:49 ] SERVER Started update.
-[ 17:08:49 ] INFO : Signal handler installed.
-[ 17:08:49 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].
-[ 17:10:21 ] Interrupt signal [ 2 ] received.
+Logfile [ serverLogfile.log ] opened [ 12-08-2022 ]
+[ 13:31:25 ] SERVER Started update.
+[ 13:31:25 ] INFO : Signal handler installed.
+[ 13:31:25 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].

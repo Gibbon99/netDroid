@@ -53,8 +53,10 @@ int main (int, char **)
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getLinkedVersion ().c_str ()));
 
-	c_createGameLoopMutex();
-	startClientEventNetwork ();
+	if (!c_createGameLoopMutex())
+		return -1;
+
+	c_startNetworkMonitor ();
 	startNetworkStateThread ();
 	Uint32 previousTime = gameTime.getTicks ();
 

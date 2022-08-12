@@ -9,4 +9,4 @@ bool c_createGameLoopMutex();
 
 // Handle the events that need to be run in the main loop
 // eg: Changes to physics world, upload GL textures
-int c_processGameEventQueue();
+void c_processGameEventQueue();

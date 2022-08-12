@@ -56,7 +56,7 @@ int processClientEventNetwork (void *param)
 
 					case ENET_EVENT_TYPE_RECEIVE:
 						clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("A packet of length %zu containing %s was received from %s on channel %u.", networkEvent->networkEvent.packet->dataLength, static_cast<char *>(networkEvent->networkEvent.peer->data), getHostnameFromAddress (networkEvent->networkEvent.peer->address).c_str (), networkEvent->networkEvent.channelID));
-						processPacketFromServer (networkEvent->networkEvent.packet, networkEvent->networkEvent.packet->dataLength);
+						c_processServerPacket (networkEvent->networkEvent.packet, networkEvent->networkEvent.packet->dataLength);
 						//
 						// Clean up the packet now that we're done using it.
 						enet_packet_destroy (networkEvent->networkEvent.packet);
@@ -79,7 +79,7 @@ int processClientEventNetwork (void *param)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Called at startup to register the network processing thread and function
-bool startClientEventNetwork ()
+bool c_startNetworkMonitor ()
 //----------------------------------------------------------------------------------------------------------------------
 {
 	if (!clientEvents.registerMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME))
@@ -115,7 +115,7 @@ bool startClientEventNetwork ()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Add a newly received event from the network to the processing queue
-void addClientNetworkEvent (ENetEvent newNetworkEvent)
+void c_addNetworkEvent (ENetEvent newNetworkEvent)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	static SDL_mutex  *lockMutex = nullptr;
@@ -147,7 +147,7 @@ void addClientNetworkEvent (ENetEvent newNetworkEvent)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Process a data packet received from the server
-void processPacketFromServer (ENetPacket *newDataPacket, size_t dataSize)
+void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	dataPacket         dataPacketIn = {};

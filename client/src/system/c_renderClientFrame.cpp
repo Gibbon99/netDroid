@@ -10,15 +10,20 @@ void renderFrame()
 {
     clientWindow.startFrame();
 
-	float texCoords[] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+	float texCoords[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f};
 	glm::vec2 renderPosition{0,0};
-	glm::vec2 textureSize{};
+	glm::vec2 quadSize{};
 
-	textureSize.x = clientTextures["testImage"].getWidth();
-	textureSize.y = clientTextures["testImage"].getHeight();
+	quadSize.x = clientTextures["testImage"].getWidth();
+	quadSize.y = clientTextures["testImage"].getHeight();
 
 	if (clientTextures["testImage"].getTextureState () == TEXTURE_LOADED)
-		c_draw2DQuad (renderPosition, textureSize, "2DQuad", clientTextures["testImage"].getTextureID(), texCoords);
+	{
+		if (!c_draw2DQuad (renderPosition, quadSize, "2DQuad", clientTextures["testImage"].getTextureID (), texCoords))
+		{
+			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("Unable to render quad with shader [ %s ] and texture [ %s ].", "2DQuad", "testImage"));
+		}
+	}
 
 	clientTestFont.addText (glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, glm::vec2{clientWindow.getWidth() - clientTestFont.getTextWidth("Here is some new text."),50}, "Here is some new text.");
 	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{50,150}, "and a second line from the same buffer !@#.");

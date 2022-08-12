@@ -31,6 +31,4 @@ extern std::map<std::string, droidTexture> clientTextures;
 
 extern CSimpleIniA iniFile;
 
-extern SDL_Texture *hex_tex;
-
 extern bool quitLoop;

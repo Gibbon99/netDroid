@@ -1,5 +1,5 @@
 #include <cstring>
-#include "../../hdr/system/peers.h"
+#include "../../hdr/system/s_peers.h"
 #include "com_util.h"
 
 std::vector<peerInformation> peers;
