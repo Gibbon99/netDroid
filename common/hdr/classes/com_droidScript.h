@@ -13,15 +13,28 @@ typedef void      (*scriptFunctionPtrStr) (int, std::string);
 class droidScript
 {
 public:
-	bool init (scriptFunctionPtrStr outputFunction, asFUNCTION_t scriptOutputFunction);
+	bool init (asFUNCTION_t scriptOutputFunction);
 
 	std::string getScriptError (int errNo);
+	std::string getLastError();
+	std::string getVersion();
+	std::string getBuildOptions();
+
+	bool addScriptFunction(const std::string &funcName, std::string hostCallName);
+	bool addHostVariable(const std::string &varName, void *varPtr);
+	bool addHostFunction(const std::string &funcName, asSFuncPtr funcPtr);
+
+	bool compileModule();
+	bool addScript (const std::string &scriptSectionName, const std::string &newScriptCode);
+	bool cacheFunctions();
+	bool run(const std::string &functionName, const std::string &param);
 
 	asIScriptEngine *scriptEngine = nullptr;
 
 private:
 
 	scriptFunctionPtrStr funcOutput{};
+	std::string lastError{};
 
 //----------------------------------------------------------------------------------------------------------------------
 //

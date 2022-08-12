@@ -1,4 +1,10 @@
 Logfile [ serverLogfile.log ] opened [ 12-08-2022 ]
-[ 13:31:25 ] SERVER Started update.
-[ 13:31:25 ] INFO : Signal handler installed.
-[ 13:31:25 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].
+[ 22:47:19 ] SERVER Started update.
+[ 22:47:19 ] INFO : Signal handler installed.
+[ 22:47:19 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].
+[ 22:47:20 ] Script engine started. Version [ 2.35.0 ] Options [  AS_64BIT_PTR AS_LINUX AS_X64_GCC  ]
+[ 22:47:20 ] Script files to load and compile.
+[ 22:47:20 ] Loaded file [ DarkestHour ] : [ 35788 ]
+[ 22:47:20 ] Loaded file [ cylon ] : [ 50005 ]
+[ 22:47:20 ] Loaded file [ splash ] : [ 30285 ]
+[ 23:11:49 ] Interrupt signal [ 2 ] received.

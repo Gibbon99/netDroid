@@ -24,6 +24,9 @@ typedef struct
 class droidMessage
 {
 public:
+	void AddRef();
+	void ReleaseRef();
+
 	void message (int target, const std::string &messageText);
 
 	explicit droidMessage (std::string fileName);

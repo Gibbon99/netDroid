@@ -26,7 +26,7 @@ networkState::~networkState ()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Set the current network textureState
-void networkState::setNewState (int newState)
+void networkState::setNewState (networkStates newState)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	SDL_LockMutex (mutex);
@@ -38,7 +38,7 @@ void networkState::setNewState (int newState)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Set the next textureState
-void networkState::setNextState (int newState)
+void networkState::setNextState (networkStates newState)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	SDL_LockMutex (mutex);
@@ -49,10 +49,10 @@ void networkState::setNextState (int newState)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Return the current textureState
-int networkState::getCurrentState ()
+networkStates networkState::getCurrentState ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	int returnValue;
+	networkStates returnValue;
 
 	SDL_LockMutex (mutex);
 	returnValue = currentState;

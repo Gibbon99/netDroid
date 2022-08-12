@@ -68,7 +68,7 @@ int main (int, char **)
 
 	SDL_Delay (500);    // Give the network stack time to start
 
-	clientNetworkState.setNewState (NETWORK_STATE_TRY_SERVER_CONNECT);
+	clientNetworkState.setNewState (networkStates::NETWORK_STATE_TRY_SERVER_CONNECT);
 
 	init2DQuad ("2DQuad");
 

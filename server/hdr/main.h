@@ -7,9 +7,12 @@
 #include "pods.h"
 #include "com_texture.h"
 #include "com_binaryBlob.h"
+#include "com_droidScript.h"
 
-extern droidServer  serverObject;
-extern droidMessage serverMessage;
+extern bool          quitLoop;
+extern droidServer   serverObject;
+extern droidMessage  serverMessage;
 extern droidLanguage serverLanguage;
+extern droidScript   serverScriptEngine;
 
 extern droidBinaryBlob testBinaryFile;

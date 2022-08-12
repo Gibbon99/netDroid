@@ -14,14 +14,17 @@ void renderFrame()
 	glm::vec2 renderPosition{0,0};
 	glm::vec2 quadSize{};
 
-	quadSize.x = clientTextures["testImage"].getWidth();
-	quadSize.y = clientTextures["testImage"].getHeight();
+	quadSize.x = clientTextures["splash"].getWidth();
+	quadSize.y = clientTextures["splash"].getHeight();
 
-	if (clientTextures["testImage"].getTextureState () == TEXTURE_LOADED)
+	quadSize.x = 800;
+	quadSize.y = 600;
+
+	if (clientTextures["splash"].getTextureState () == TEXTURE_LOADED)
 	{
-		if (!c_draw2DQuad (renderPosition, quadSize, "2DQuad", clientTextures["testImage"].getTextureID (), texCoords))
+		if (!c_draw2DQuad (renderPosition, quadSize, "2DQuad", clientTextures["splash"].getTextureID (), texCoords))
 		{
-			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("Unable to render quad with shader [ %s ] and texture [ %s ].", "2DQuad", "testImage"));
+			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("Unable to render quad with shader [ %s ] and texture [ %s ].", "2DQuad", "splash"));
 		}
 	}
 

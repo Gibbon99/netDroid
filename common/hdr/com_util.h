@@ -26,3 +26,9 @@ dataPacket deSerialiseDataPacket (std::vector<uint8_t> newDataPacket, size_t dat
 
 // Break up entry line into tokens
 std::vector<std::string> tokeniseLine (std::string entryLine, std::string regExpression);
+
+// Return the errorNum as a readable string
+std::string getGLErrorString (int errorNum);
+
+// Read a text file from the filesystem into a std::string
+std::string readTextFile(const std::string &fileName);

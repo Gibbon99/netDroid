@@ -1,6 +1,16 @@
 #include "com_message.h"
 #include "com_util.h"
 
+void droidMessage::AddRef()
+{
+
+}
+
+void droidMessage::ReleaseRef()
+{
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Set the filename to be used for writing to file

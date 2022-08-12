@@ -22,37 +22,37 @@ int processNetworkState (void *param)
 
 			switch (clientNetworkState.getCurrentState ())
 			{
-				case NETWORK_STATE_PRE_INIT:
+				case networkStates::NETWORK_STATE_PRE_INIT:
 					clientNetworkState.setNetworkStarted (false);
-					clientNetworkState.setNewState (NETWORK_STATE_DO_INIT);
+					clientNetworkState.setNewState (networkStates::NETWORK_STATE_DO_INIT);
 					break;
 
-				case NETWORK_STATE_DO_INIT:
+				case networkStates::NETWORK_STATE_DO_INIT:
 					if (!clientNetworkObject.initClient ())
 					{
-						clientNetworkState.setNewState (NETWORK_STATE_INIT_ERROR);
+						clientNetworkState.setNewState (networkStates::NETWORK_STATE_INIT_ERROR);
 						clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "An error occurred starting network library.");
 					}
 					else
 					{
-						clientNetworkState.setNewState (NETWORK_STATE_INIT_DONE);
+						clientNetworkState.setNewState (networkStates::NETWORK_STATE_INIT_DONE);
 						clientNetworkState.setNetworkStarted (true);
 						clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Network library started.");
 					}
 					break;
 
-				case NETWORK_STATE_INIT_ERROR:
+				case networkStates::NETWORK_STATE_INIT_ERROR:
 					break;
 
-				case NETWORK_STATE_TRY_SERVER_CONNECT:
+				case networkStates::NETWORK_STATE_TRY_SERVER_CONNECT:
 					clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Attempt connection to server...");
-					clientNetworkState.setNewState (NETWORK_STATE_ATTEMPTING_CONNECT);
+					clientNetworkState.setNewState (networkStates::NETWORK_STATE_ATTEMPTING_CONNECT);
 					if (clientNetworkState.isNetworkStarted ())
 					{
 						if (!clientNetworkObject.connectToServer (serverAddress, serverPort))
 						{
 							clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "No available peers for initiating an ENet connection.");
-							clientNetworkState.setNewState (NETWORK_STATE_CONNECT_FAILED_ALERT);
+							clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECT_FAILED_ALERT);
 						}
 						else
 						{
@@ -62,11 +62,11 @@ int processNetworkState (void *param)
 					else
 					{
 						clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Network stack has not been started.");
-						clientNetworkState.setNewState (NETWORK_STATE_PRE_INIT);
+						clientNetworkState.setNewState (networkStates::NETWORK_STATE_PRE_INIT);
 					}
 					break;
 
-				case NETWORK_STATE_ATTEMPTING_CONNECT:
+				case networkStates::NETWORK_STATE_ATTEMPTING_CONNECT:
 					static int attemptCounter = 0;
 					SDL_Delay (1000);
 					clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("[ %i ] Attempting to connect to server.", attemptCounter));
@@ -74,34 +74,34 @@ int processNetworkState (void *param)
 					if (attemptCounter > 5)
 					{
 						attemptCounter = 0;
-						clientNetworkState.setNewState (NETWORK_STATE_CONNECT_FAILED_ALERT);
+						clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECT_FAILED_ALERT);
 					}
 					break;
 
-				case NETWORK_STATE_CONNECT_FAILED_ALERT:
+				case networkStates::NETWORK_STATE_CONNECT_FAILED_ALERT:
 					clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Connection failed.");
-					clientNetworkState.setNewState (NETWORK_STATE_CONNECT_FAILED);
+					clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECT_FAILED);
 					break;
 
-				case NETWORK_STATE_CONNECT_FAILED:
+				case networkStates::NETWORK_STATE_CONNECT_FAILED:
 					// Send an event to the game thread starting the process again - limit number of times
 					break;
 
-				case NETWORK_STATE_INIT_DONE:
+				case networkStates::NETWORK_STATE_INIT_DONE:
 					break;
 
-				case NETWORK_STATE_CONNECT_SUCCESS:
+				case networkStates::NETWORK_STATE_CONNECT_SUCCESS:
 					clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Connected to server.");
-					clientNetworkState.setNewState (NETWORK_STATE_CONNECTED);
+					clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECTED);
 					break;
 
-				case NETWORK_STATE_CONNECTED:
+				case networkStates::NETWORK_STATE_CONNECTED:
 					break;
 
-				case NETWORK_STATE_KICKED:
+				case networkStates::NETWORK_STATE_KICKED:
 					break;
 
-				case NETWORK_STATE_TIMED_OUT:
+				case networkStates::NETWORK_STATE_TIMED_OUT:
 					break;
 			}
 		}
@@ -116,7 +116,7 @@ int processNetworkState (void *param)
 bool startNetworkStateThread ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	clientNetworkState.setNewState (NETWORK_STATE_PRE_INIT);
+	clientNetworkState.setNewState (networkStates::NETWORK_STATE_PRE_INIT);
 
 	if (!monitorNetworkStateThread.registerThread (reinterpret_cast<SDL_ThreadFunction>(processNetworkState), EVENT_CLIENT_NETWORK_MONITOR_THREAD))
 	{

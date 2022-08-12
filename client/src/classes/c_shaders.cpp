@@ -354,7 +354,6 @@ int _droidShaders::getLocation (const std::string &keyName)
 			m_locationID.insert (std::pair<std::string, varInfo> (u_keyName, varInfoType));
 			return 0;
 		}
-//		con_print(CON_INFO, true, "Caching value for [ %s - %i ]. Shader [ %i ]", keyName.c_str(), keyLocation, whichShader);
 
 		varInfoType.location = keyLocation;
 		varInfoType.refCount = 0;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class droidBinaryBlob
 {
@@ -13,7 +14,10 @@ public:
 
 	~droidBinaryBlob ();
 
+	std::string getLastError ();
+
 private:
 	std::vector<int8_t> buffer{};
-	int              bufferSize{};
+	int                 bufferSize{};
+	std::string         lastError{};
 };

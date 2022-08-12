@@ -195,7 +195,7 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		return false;
 	}
 
-	iconSurface   = SDL_LoadBMP("data/icon.bmp");
+	iconSurface   = SDL_LoadBMP("client/data/icon.bmp");
 	if (iconSurface != nullptr)
 		SDL_SetWindowIcon (window, iconSurface);
 	else

@@ -14,16 +14,20 @@
 #include "../hdr/network/s_network.h"
 #include "../hdr/system/s_processFrame.h"
 #include "../hdr/system/s_fileBootstrap.h"
+#include "com_droidScript.h"
+#include "../hdr/system/s_scriptEngine.h"
 
 #endif
 
-droidTime       gameTime{};
-droidServer     serverObject{};
-droidSignals    signalHandler{};
-droidMessage    serverMessage{"serverLogfile.log"};
-droidLanguage   serverLanguage{};
-droidBinaryBlob testBinaryFile{};
-CSimpleIniA     iniFile;
+droidTime     gameTime{};
+droidServer   serverObject{};
+droidSignals  signalHandler{};
+droidMessage  serverMessage{"serverLogfile.log"};
+droidLanguage serverLanguage{};
+droidScript   serverScriptEngine{};
+
+CSimpleIniA iniFile;
+bool        quitLoop{false};
 
 int         listenPort = 1234;
 std::string listenAddress{"127.0.0.1"};
@@ -31,7 +35,7 @@ std::string languageFileType{"englishLangFile"};
 
 int main (int, char **)
 {
-	bool   quitLoop    = false;
+
 	Uint32 currentTime{0};
 	Uint32 maxNumUpdateLoops{0};
 	double msPerUpdate = 1000.0f / TICKS_PER_SECOND;
@@ -63,11 +67,8 @@ int main (int, char **)
 
 	SDL_Init (SDL_INIT_EVERYTHING);
 
-	if (!testBinaryFile.loadFromDisk (serverFileMapping.getfileMappedName ("testImage")))
-	{
-		serverMessage.message (MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT, sys_getString("ERROR : Could not load image file [ %s ]", serverFileMapping.getfileMappedName ("testImage").c_str()));
-		exit (-1);
-	}
+	if (!s_startScriptEngine ())
+		s_shutdownWithError(serverLanguage.getMappedString("scriptStartError"));
 
 	while (!quitLoop)
 	{

@@ -60,7 +60,7 @@ bool initFileWatch ()
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Function that is run in thread to send alerts on file changes
-int inotifyThreadFunction (void *param)
+int inotifyThreadFunction ([[maybe_unused]]void *param)
 //--------------------------------------------------------------------------------------------------------------------
 {
 #define EVENT_SIZE  ( sizeof (struct inotify_event) )

@@ -45,7 +45,7 @@ int processClientEventNetwork (void *param)
 				{
 					case ENET_EVENT_TYPE_CONNECT:
 						clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Connection to [ %s:%i ] succeeded.", getHostnameFromAddress (networkEvent->networkEvent.peer->address).c_str (), networkEvent->networkEvent.peer->address.port));
-						clientNetworkState.setNewState (NETWORK_STATE_CONNECT_SUCCESS);
+						clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECT_SUCCESS);
 						break;
 
 					case ENET_EVENT_TYPE_DISCONNECT:
@@ -132,8 +132,6 @@ void c_addNetworkEvent (ENetEvent newNetworkEvent)
 			// TODO Exit with error
 		}
 	}
-
-//	printf ("Got new network event - type [ %i ]\n", newNetworkEvent.type);
 
 	tempNetworkEvent = new droidEventNetwork (newNetworkEvent);
 

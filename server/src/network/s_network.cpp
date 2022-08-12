@@ -6,6 +6,7 @@
 #include "../../hdr/system/s_peers.h"
 #include "../../hdr/main.h"
 #include "../../hdr/system/s_shutdown.h"
+#include "../../hdr/system/s_resources.h"
 
 #define EVENT_NETWORK_THREAD_NAME   "eventNetworkThread"
 #define EVENT_NETWORK_MUTEX_NAME    "eventNetworkMutex"
@@ -60,7 +61,7 @@ int processEventNetwork (void *param)
 
 //							serverSendNewClientID (networkEvent->networkEvent.peer, newClientID);
 
-							serverSendImageToClient (networkEvent->networkEvent.peer, "testImage");
+							serverSendImageToClient (networkEvent->networkEvent.peer, "splash");
 //							networkEvent->networkEvent.peer->data = (void *) "Client information";
 							break;
 						case ENET_EVENT_TYPE_RECEIVE:
@@ -157,7 +158,7 @@ void serverSendNewClientID (ENetPeer *peerInfo, int newClientID)
 	newPacket.packetData = newClientID;
 	newPacket.testString = "Test string from server.";
 	newPacket.binarySize = 0;
-	newPacket.binaryData.clear();
+	newPacket.binaryData.clear ();
 
 	com_sendDataToPeer (peerInfo, newPacket);
 }
@@ -170,37 +171,33 @@ void serverSendImageToClient (ENetPeer *peerInfo, std::string imageName)
 {
 	dataPacket newPacket;
 
-	auto tempBuffer = testBinaryFile.getBlob();
+	auto tempBuffer = binaryFiles[imageName].getBlob ();
 
-    SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&tempBuffer[0]), testBinaryFile.getBlobSize());
-    if (nullptr == rw)
-    {
-        serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString("Couldn't create RWops [ %s ]", SDL_GetError ()));
-        return;
-    }
+	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&tempBuffer[0]), binaryFiles[imageName].getBlobSize ());
+	if (nullptr == rw)
+	{
+		serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create RWops [ %s ]", SDL_GetError ()));
+		return;
+	}
 
-    auto tempSurface = IMG_LoadJPG_RW(rw);
-    if (nullptr == tempSurface)
-    {
-        serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString("Unable to load image from server memory [ %s ]", SDL_GetError()));
-        return;
-    }
-
-    printf("Loaded image from binaryblob\n");
+	auto tempSurface = IMG_LoadJPG_RW (rw);
+	if (nullptr == tempSurface)
+	{
+		serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Unable to load image from server memory [ %s ]", SDL_GetError ()));
+		return;
+	}
 
 	newPacket.packetType = DATA_PACKET_TYPES::PACKET_IMAGE;
 	newPacket.packetData = 0;
-	newPacket.testString = std::move(imageName);
-	newPacket.binarySize = testBinaryFile.getBlobSize();
+	newPacket.testString = std::move (imageName);
+	newPacket.binarySize = binaryFiles[newPacket.testString].getBlobSize ();
 
-//    newPacket.binaryData.resize(newPacket.binarySize);
-//    memcpy(&newPacket.binaryData[0], testBinaryFile.getBlob(), newPacket.binaryData.size());
+	for (int i = 0; i != newPacket.binarySize; i++)
+	{
+		newPacket.binaryData.push_back (tempBuffer[i]);
+	}
 
-	for (int i = 0; i != newPacket.binarySize; i++) {
-        newPacket.binaryData.push_back(tempBuffer[i]);
-    }
-
-	serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString("Sent image file [ %s ] size [ %i ]", newPacket.testString.c_str(), newPacket.binaryData.size()));
+	serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Sent image file [ %s ] size [ %i ]", newPacket.testString.c_str (), newPacket.binaryData.size ()));
 
 	com_sendDataToPeer (peerInfo, newPacket);
 }
