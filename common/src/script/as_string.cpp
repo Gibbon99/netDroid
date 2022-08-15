@@ -294,8 +294,8 @@ size_t asCString::Format(const char *format, ...)
 	else
 	{
 		// TODO: For some reason this doesn't work properly on Linux. Perhaps the
-		//       problem is related to vsnprintf not keeping the textureState of va_arg.
-		//       Perhaps I need to rewrite this in some way to keep the textureState
+		//       problem is related to vsnprintf not keeping the state of va_arg.
+		//       Perhaps I need to rewrite this in some way to keep the state
 		size_t n = startSize*2;
 		asCString str; // Use temporary string in case the current buffer is a parameter
 		str.Allocate(n, false);

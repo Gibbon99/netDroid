@@ -8,10 +8,8 @@ void getNetworkEvents ()
 //------------------------------------------------------------------------------------------------------------------
 {
 	ENetEvent event{};
-	int       returnCode{};
 
-	returnCode = enet_host_service (serverObject.getHostPointer (), &event, 0);
-	if (returnCode > 0)
+	while (enet_host_service (serverObject.getHostPointer (), &event, 0) > 0)
 	{
 		addNetworkEvent (event);
 	}

@@ -68,21 +68,9 @@ void c_getNetworkEvents ()
 //------------------------------------------------------------------------------------------------------------------
 {
 	ENetEvent event;
-	int       returnCode{};
 
-	returnCode = enet_host_service (clientNetworkObject.getHostPointer (), &event, 0);
-	if (returnCode == 0)    // No events
-		return;
-
-	if (returnCode > 0)
+	while (enet_host_service (clientNetworkObject.getHostPointer (), &event, 0) > 0)
 	{
 		c_addNetworkEvent (event);
-		return;
-	}
-
-	if (returnCode < 0)
-	{
-		// TODO Report an error
-		return;
 	}
 }

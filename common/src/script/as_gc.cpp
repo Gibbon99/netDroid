@@ -185,7 +185,7 @@ int asCGarbageCollector::GarbageCollect(asDWORD flags, asUINT iterations)
 
 		if( flags & asGC_FULL_CYCLE )
 		{
-			// Reset the textureState
+			// Reset the state
 			if( doDetect )
 			{
 				// Move all new objects to the old list, so we guarantee that all is detected

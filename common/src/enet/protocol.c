@@ -9,7 +9,7 @@
 #include "enet/time.h"
 #include "enet/enet.h"
 
-static size_t commandSizes [ENET_PROTOCOL_COMMAND_COUNT] =
+static const size_t commandSizes [ENET_PROTOCOL_COMMAND_COUNT] =
 {
     0,
     sizeof (ENetProtocolAcknowledge),
@@ -1870,7 +1870,6 @@ enet_host_service (ENetHost * host, ENetEvent * event, enet_uint32 timeout)
        while (waitCondition & ENET_SOCKET_WAIT_INTERRUPT);
 
        host -> serviceTime = enet_time_get ();
-
     } while (waitCondition & ENET_SOCKET_WAIT_RECEIVE);
 
     return 0; 

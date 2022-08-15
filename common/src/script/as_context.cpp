@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2020 Andreas Jonsson
+   Copyright (c) 2003-2021 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -476,8 +476,8 @@ int asCContext::Prepare(asIScriptFunction *func)
 			m_callStack.AllocateNoConstruct(m_engine->ep.initCallStackSize * CALLSTACK_FRAME_SIZE, true);
 	}
 
-	// Reset textureState
-	// Most of the time the previous textureState will be asEXECUTION_FINISHED, in which case the values are already initialized
+	// Reset state
+	// Most of the time the previous state will be asEXECUTION_FINISHED, in which case the values are already initialized
 	if( m_status != asEXECUTION_FINISHED )
 	{
 		m_exceptionLine           = -1;
@@ -1335,7 +1335,7 @@ int asCContext::Execute()
 	if( m_lineCallback )
 	{
 		// Call the line callback one last time before leaving
-		// so anyone listening can catch the textureState change
+		// so anyone listening can catch the state change
 		CallLineCallback();
 		m_regs.doProcessSuspend = true;
 	}
@@ -1388,8 +1388,8 @@ int asCContext::Execute()
 
 int asCContext::PushState()
 {
-	// Only allow the textureState to be pushed when active
-	// TODO: Can we support a suspended textureState too? So the reuse of
+	// Only allow the state to be pushed when active
+	// TODO: Can we support a suspended state too? So the reuse of
 	//       the context can be done outside the Execute() call?
 	if( m_status != asEXECUTION_ACTIVE )
 	{
@@ -1439,7 +1439,7 @@ int asCContext::PushState()
 	// Clear the initial function so that Prepare() knows it must do all validations
 	m_initialFunction = 0;
 
-	// After this the textureState should appear as if uninitialized
+	// After this the state should appear as if uninitialized
 	m_callingSystemFunction = 0;
 
 	m_regs.objectRegister = 0;
@@ -1460,10 +1460,10 @@ int asCContext::PopState()
 	// Clean up the current execution
 	Unprepare();
 
-	// The topmost textureState must be a marker for nested call
+	// The topmost state must be a marker for nested call
 	asASSERT( m_callStack[m_callStack.GetLength() - CALLSTACK_FRAME_SIZE] == 0 );
 
-	// Restore the previous textureState
+	// Restore the previous state
 	asPWORD *tmp = &m_callStack[m_callStack.GetLength() - CALLSTACK_FRAME_SIZE];
 	m_callingSystemFunction = reinterpret_cast<asCScriptFunction*>(tmp[1]);
 	m_callStack.SetLength(m_callStack.GetLength() - CALLSTACK_FRAME_SIZE);
@@ -2882,7 +2882,8 @@ void asCContext::ExecuteNext()
 			m_regs.stackPointer      = l_sp;
 			m_regs.stackFramePointer = l_fp;
 
-			if( !(objType->flags & asOBJ_NOCOUNT) )
+			// Update ref counter for object types that require it
+			if( !(objType->flags & (asOBJ_NOCOUNT | asOBJ_VALUE)) )
 			{
 				// Release previous object held by destination pointer
 				if( *d != 0 && beh->release )
@@ -3912,21 +3913,21 @@ void asCContext::ExecuteNext()
 			}
 			else
 			{
-				if( func->funcType == asFUNC_SCRIPT )
+				if (func->funcType == asFUNC_SCRIPT)
 				{
 					m_regs.programPointer++;
 					CallScriptFunction(func);
 				}
-				else if( func->funcType == asFUNC_DELEGATE )
+				else if (func->funcType == asFUNC_DELEGATE)
 				{
 					// Push the object pointer on the stack. There is always a reserved space for this so
 					// we don't don't need to worry about overflowing the allocated memory buffer
-					asASSERT( m_regs.stackPointer - AS_PTR_SIZE >= m_stackBlocks[m_stackIndex] );
+					asASSERT(m_regs.stackPointer - AS_PTR_SIZE >= m_stackBlocks[m_stackIndex]);
 					m_regs.stackPointer -= AS_PTR_SIZE;
 					*(asPWORD*)m_regs.stackPointer = asPWORD(func->objForDelegate);
 
 					// Call the delegated method
-					if( func->funcForDelegate->funcType == asFUNC_SYSTEM )
+					if (func->funcForDelegate->funcType == asFUNC_SYSTEM)
 					{
 						m_regs.stackPointer += CallSystemFunction(func->funcForDelegate->id, this);
 
@@ -3942,15 +3943,32 @@ void asCContext::ExecuteNext()
 						CallInterfaceMethod(func->funcForDelegate);
 					}
 				}
-				else
+				else if (func->funcType == asFUNC_SYSTEM)
 				{
-					asASSERT( func->funcType == asFUNC_SYSTEM );
-
 					m_regs.stackPointer += CallSystemFunction(func->id, this);
 
 					// Update program position after the call so the line number
 					// is correct in case the system function queries it
 					m_regs.programPointer++;
+				}
+				else if (func->funcType == asFUNC_IMPORTED)
+				{
+					m_regs.programPointer++;
+					int funcId = m_engine->importedFunctions[func->id & ~FUNC_IMPORTED]->boundFunctionId;
+					if (funcId > 0)
+						CallScriptFunction(m_engine->scriptFunctions[funcId]);
+					else
+					{
+						// Tell the exception handler to clean up the arguments to this method
+						m_needToCleanupArgs = true;
+
+						SetInternalException(TXT_UNBOUND_FUNCTION);
+					}
+				}
+				else
+				{
+					// Should not get here
+					asASSERT(false);
 				}
 			}
 
@@ -4141,7 +4159,8 @@ void asCContext::ExecuteNext()
 			m_regs.stackPointer      = l_sp;
 			m_regs.stackFramePointer = l_fp;
 
-			if( !(objType->flags & asOBJ_NOCOUNT) )
+			// Update ref counter for object types that require it
+			if( !(objType->flags & (asOBJ_NOCOUNT | asOBJ_VALUE)) )
 			{
 				// Release previous object held by destination pointer
 				if( *d != 0 && beh->release )
@@ -5177,7 +5196,7 @@ bool asCContext::CleanStackFrame(bool catchException)
 // interface
 int asCContext::GetExceptionLineNumber(int *column, const char **sectionName)
 {
-	// Return the last exception even if the context is no longer in the exception textureState
+	// Return the last exception even if the context is no longer in the exception state
 	// if( GetState() != asEXECUTION_EXCEPTION ) return asERROR;
 
 	if( column ) *column = m_exceptionColumn;
@@ -5197,7 +5216,7 @@ int asCContext::GetExceptionLineNumber(int *column, const char **sectionName)
 // interface
 asIScriptFunction *asCContext::GetExceptionFunction()
 {
-	// Return the last exception even if the context is no longer in the exception textureState
+	// Return the last exception even if the context is no longer in the exception state
 	// if( GetState() != asEXECUTION_EXCEPTION ) return 0;
 
 	return m_engine->scriptFunctions[m_exceptionFunction];
@@ -5206,7 +5225,7 @@ asIScriptFunction *asCContext::GetExceptionFunction()
 // interface
 const char *asCContext::GetExceptionString()
 {
-	// Return the last exception even if the context is no longer in the exception textureState
+	// Return the last exception even if the context is no longer in the exception state
 	// if( GetState() != asEXECUTION_EXCEPTION ) return 0;
 
 	return m_exceptionString.AddressOf();

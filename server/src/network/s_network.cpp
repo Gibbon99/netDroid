@@ -19,7 +19,7 @@ std::queue<droidEventNetwork *> networkEventsQueue{};
 // This function is called from the thread engine class after being registered at startup
 //
 // It processes network events from network clients
-int processEventNetwork (void *param)
+int processEventNetwork ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	int newClientID = -1;
