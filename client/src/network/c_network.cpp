@@ -3,10 +3,6 @@
 
 int networkFetchDelayMS{100};
 
-#define EVENT_CLIENT_NETWORK_THREAD_NAME   "eventClientNetworkThread"
-#define EVENT_CLIENT_NETWORK_MUTEX_NAME    "eventClientNetworkMutex"
-
-droidThreadsEngine              clientEvents{};
 std::queue<droidEventNetwork *> networkEventsQueue{};
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -14,32 +10,35 @@ std::queue<droidEventNetwork *> networkEventsQueue{};
 // This function is called from the thread engine class after being registered at startup
 //
 // It processes network events sent to the client from the server
-int processClientEventNetwork (void *param)
+int processClientEventNetwork ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	droidEventNetwork *networkEvent{};
-	static SDL_mutex  *eventNetworkMutex = nullptr;
+	static SDL_mutex  *eventNetworkMutex{nullptr};
 
 	//
 	// Cache getting the mutex value
-	eventNetworkMutex = clientEvents.findMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME);
+	eventNetworkMutex = clientThreads.findMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME);
 	if (nullptr == eventNetworkMutex)
 	{
-		clientMessage.message (MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("%s", clientEvents.getErrorString ().c_str ()));
+		clientMessage.message (MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("%s", clientThreads.getErrorString ().c_str ()));
 		// TODO Quit with error
 	}
 
-	while (clientEvents.canThreadRun (EVENT_CLIENT_NETWORK_THREAD_NAME))
+	while (clientThreads.canThreadRun (EVENT_CLIENT_NETWORK_THREAD_NAME))
 	{
-		if (clientEvents.isThreadReady (EVENT_CLIENT_NETWORK_THREAD_NAME))
+		if (clientThreads.isThreadReady (EVENT_CLIENT_NETWORK_THREAD_NAME))
 		{
 			SDL_Delay (networkFetchDelayMS);    // Increase this value to simulate network latency
 
 			if (!networkEventsQueue.empty ())   // Events in the queue to process
 			{
-				SDL_LockMutex (eventNetworkMutex);   // Blocks if the mutex is locked by another thread
+				if (!clientThreads.lockMutex (eventNetworkMutex))   // Blocks if the mutex is locked by another thread
+				{
+					// TODO - Quit with error - could not lock mutex
+				}
 				networkEvent = networkEventsQueue.front ();
-				SDL_UnlockMutex (eventNetworkMutex);
+				clientThreads.unLockMutex (eventNetworkMutex);
 
 				switch (networkEvent->networkEvent.type)
 				{
@@ -72,7 +71,7 @@ int processClientEventNetwork (void *param)
 			}
 		}
 	}
-	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Thread [ %s ] finished.", EVENT_CLIENT_NETWORK_THREAD_NAME).c_str ());
+	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Thread [ %s ] finished.", EVENT_CLIENT_NETWORK_THREAD_NAME));
 	return 1;
 }
 
@@ -82,31 +81,31 @@ int processClientEventNetwork (void *param)
 bool c_startNetworkMonitor ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	if (!clientEvents.registerMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME))
+	if (!clientThreads.registerMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME))
 	{
-		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientEvents.getErrorString ());
+		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString ());
 		return false;
 	}
 	else
 		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString ("Mutex [ %s ] registered.", EVENT_CLIENT_NETWORK_MUTEX_NAME));
 
-	if (!clientEvents.registerThread (processClientEventNetwork, EVENT_CLIENT_NETWORK_THREAD_NAME))
+	if (!clientThreads.registerThread (processClientEventNetwork, EVENT_CLIENT_NETWORK_THREAD_NAME))
 	{
-		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientEvents.getErrorString ());
+		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString ());
 		return false;
 	}
 	else
 		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString ("Thread [ %s ] registered.", EVENT_CLIENT_NETWORK_THREAD_NAME));
 
-	if (!clientEvents.setThreadRunState (true, EVENT_CLIENT_NETWORK_THREAD_NAME))
+	if (!clientThreads.setThreadRunState (true, EVENT_CLIENT_NETWORK_THREAD_NAME))
 	{
-		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientEvents.getErrorString ());
+		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString ());
 		return false;
 	}
 
-	if (!clientEvents.setThreadReadyState (true, EVENT_CLIENT_NETWORK_THREAD_NAME))
+	if (!clientThreads.setThreadReadyState (true, EVENT_CLIENT_NETWORK_THREAD_NAME))
 	{
-		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientEvents.getErrorString ());
+		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString ());
 		return false;
 	}
 	return true;
@@ -125,10 +124,10 @@ void c_addNetworkEvent (ENetEvent newNetworkEvent)
 	// Cache mutex value
 	if (lockMutex == nullptr)
 	{
-		lockMutex = clientEvents.findMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME);
+		lockMutex = clientThreads.findMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME);
 		if (nullptr == lockMutex)
 		{
-			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, clientEvents.getErrorString ());
+			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, clientThreads.getErrorString ());
 			// TODO Exit with error
 		}
 	}
@@ -137,9 +136,11 @@ void c_addNetworkEvent (ENetEvent newNetworkEvent)
 
 	//
 	// Put the new event onto the logfile queue
-	SDL_LockMutex (lockMutex);   // Blocks if the mutex is locked by another thread
-	networkEventsQueue.push (tempNetworkEvent);
-	SDL_UnlockMutex (lockMutex);
+	if (clientThreads.lockMutex(lockMutex))
+	{
+		networkEventsQueue.push (tempNetworkEvent);
+		clientThreads.unLockMutex (lockMutex);
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------

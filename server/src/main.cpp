@@ -16,6 +16,7 @@
 #include "../hdr/system/s_fileBootstrap.h"
 #include "com_droidScript.h"
 #include "../hdr/system/s_scriptEngine.h"
+#include "com_console.h"
 
 #endif
 
@@ -25,6 +26,7 @@ droidSignals  signalHandler{};
 droidMessage  serverMessage{"serverLogfile.log"};
 droidLanguage serverLanguage{};
 droidScript   serverScriptEngine{};
+droidConsole    serverConsole{1, 1, 1, 1, 1};
 
 CSimpleIniA iniFile;
 bool        quitLoop{false};

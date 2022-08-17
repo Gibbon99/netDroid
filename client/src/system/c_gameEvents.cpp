@@ -5,18 +5,15 @@
 //Add game event queue
 std::queue<myEventData_> gameEventQueue;
 
-SDL_mutex *mainLoopMutex;
-
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Setup the mutex for the game loop queue access
 bool c_createGameLoopMutex()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	mainLoopMutex = SDL_CreateMutex();
-	if (nullptr == mainLoopMutex)
+	if (!clientThreads.registerMutex (MAIN_LOOP_MUTEX))
 	{
-		clientMessage.message(MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT, sys_getString("Unable to create mainLoopMutex : [ %s ]", SDL_GetError()));
+		clientMessage.message(MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT, sys_getString("Unable to create mainLoopMutex : [ %s ]", clientThreads.getErrorString().c_str()));
 		return false;
 	}
 	return true;
@@ -33,11 +30,11 @@ void c_processGameEventQueue()
 
 	if ( !gameEventQueue.empty() )
 	{
-		if ( SDL_LockMutex ( mainLoopMutex ) == 0)
+		if ( clientThreads.lockMutex ( MAIN_LOOP_MUTEX ))
 		{
 			tempEventData = gameEventQueue.front();
 			gameEventQueue.pop ();
-			SDL_UnlockMutex (mainLoopMutex);
+			clientThreads.unLockMutex( MAIN_LOOP_MUTEX );
 		}
 
 		switch ( tempEventData.eventAction )
@@ -48,6 +45,10 @@ void c_processGameEventQueue()
 				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_CONSOLE, sys_getString("%s", clientTextures[tempEventData.eventString].getLastError().c_str()));
 				return;
 				}
+				break;
+
+			case EventAction::ACTION_CONSOLE_ADD:
+				clientConsole.add(0, tempEventData.data1, tempEventData.data2, tempEventData.data3, 1, tempEventData.eventString);
 				break;
 
 			default:

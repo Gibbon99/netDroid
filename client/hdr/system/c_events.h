@@ -10,12 +10,14 @@
 
 enum class EventType
 {
-	EVENT_GAME_LOOP = 0
+	EVENT_GAME_LOOP = 0,
+	EVENT_CONSOLE
 };
 
 enum class EventAction
 {
-	ACTION_UPLOAD_TEXTURE = 0
+	ACTION_UPLOAD_TEXTURE = 0,
+	ACTION_CONSOLE_ADD
 };
 
 struct myEventData_

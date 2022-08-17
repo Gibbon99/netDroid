@@ -39,8 +39,6 @@ droidMessage::~droidMessage()
 void droidMessage::message(int target, const std::string& messageText)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	_consoleLine    tempConsoleLine;
-
 #ifdef Release
 	if (target & MESSAGE_TARGET_DEBUG)
 		return;
@@ -61,36 +59,11 @@ void droidMessage::message(int target, const std::string& messageText)
 
 	if (target & MESSAGE_TARGET_CONSOLE)
 	{
-		tempConsoleLine.red = 255;
-		tempConsoleLine.green = 255;
-		tempConsoleLine.blue = 255;
-		tempConsoleLine.consoleLine = messageText;
-		consoleText.push_back (tempConsoleLine);
+#ifdef IS_CLIENT
+		c_addEventToQueue (EVENT_CONSOLE, ACTION_CONSOLE_ADD, 255, 255, 255, glm::vec2{}, glm::vec2{}, messageText );
+#endif
+
 	}
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Return the number of lines currently in the console vector
-int droidMessage::getNumberOfLines()
-//----------------------------------------------------------------------------------------------------------------------
-{
-	return static_cast<int>(consoleText.size());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Get the text from the passed in index for the console
-std::string droidMessage::getConsoleLine(int lineIndex)
-//----------------------------------------------------------------------------------------------------------------------
-{
-	if (lineIndex > static_cast<int>(consoleText.size() - 1))
-	{
-		lastError = sys_getString("Index [ %i ] out of bounds [ %i ].", lineIndex, consoleText.size());
-		return lastError;
-	}
-
-	return consoleText[lineIndex].consoleLine;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

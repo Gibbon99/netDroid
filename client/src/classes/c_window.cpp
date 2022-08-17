@@ -13,6 +13,172 @@ droidWindow::droidWindow (int newWindowWidth, int newWindowHeight)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+// Create the window
+bool droidWindow::create (const std::string &windowName, bool useFullscreen)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	if (SDL_Init (SDL_INIT_EVERYTHING) < 0)
+	{
+		lastError = sys_getString ("ERROR : SDL could not initialize. SDL Error [ %s ]", SDL_GetError ());
+		return false;
+	}
+
+	printf("[ %u ] After sdl init\n", SDL_GetTicks ());
+
+	//
+	// Create the window centered at resolution
+	Uint32 windowFlags;
+
+	windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+	if (useFullscreen)
+		windowFlags |= SDL_WINDOW_FULLSCREEN;
+
+	// Set the OpenGL version.
+	// SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute( SDL_GL_ACCELERATED_VISUAL, 1 );
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+	SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
+
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
+	SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+#if (DEBUG_LEVEL > 0)
+	SDL_GL_SetAttribute (SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
+	printf("[ %u ] Before1 sdl create window\n", SDL_GetTicks ());
+
+	window = SDL_CreateWindow (windowName.c_str (), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_windowWidth, m_windowHeight, windowFlags);
+
+	printf("[ %u ] After sdl create window\n", SDL_GetTicks ());
+
+	// Was the window created ok
+	if (!window)
+	{
+		lastError = sys_getString ("Unable to create window : [ %s ]", SDL_GetError ());
+		return false;
+	}
+
+	iconSurface   = SDL_LoadBMP("client/data/icon.bmp");
+	if (iconSurface != nullptr)
+		SDL_SetWindowIcon (window, iconSurface);
+	else
+		lastError = sys_getString ("Error : Window : Unable to load window icon.");
+
+	printf("[ %u ] After sdl load bmp\n", SDL_GetTicks ());
+
+	// Create the opengl context and attach it to the window
+	openglContext    = SDL_GL_CreateContext (window);
+	if (nullptr == openglContext)
+	{
+		lastError = sys_getString ("Unable to create OpenGL context : [ %s ]", SDL_GetError ());
+		return false;
+	}
+
+	printf("[ %u ] After sdl create context\n", SDL_GetTicks ());
+
+	if (SDL_GL_MakeCurrent (window, openglContext) < 0)
+	{
+		lastError = sys_getString ("Context error [ %s ]", SDL_GetError ());
+		return false;
+	}
+
+	printf("[ %u ] After sdl make current\n", SDL_GetTicks ());
+
+	//
+	// Init the OpenGL extensions
+	glewExperimental = GL_TRUE;
+	auto glewReturnCode = glewInit ();
+	if (GLEW_OK != glewReturnCode)
+	{
+		lastError = sys_getString ("Failed to start OpenGL extensions : [ %s ]", glewGetErrorString (glewReturnCode));
+		return false;
+	}
+
+	printf("After sdl glewinit\n");
+
+	// Turn on double buffering with a 24bit Z buffer.
+	// May need to change this to 16 or 32
+	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
+	if (-1 == SDL_GL_SetSwapInterval (1))
+	{
+		lastError = sys_getString ("Unable to use selected vsync method : [ %s ]", SDL_GetError ());
+		SDL_GL_SetSwapInterval (1);
+	}
+
+	if (IMG_Init (IMG_INIT_JPG) < 0)
+	{
+		lastError = sys_getString ("ERROR : SDL_Image could not initialize. SDL Error [ %s ]", IMG_GetError ());
+		return false;
+	}
+
+	printf("[ %u ] After init jpg\n", SDL_GetTicks ());
+
+
+	if (!createFrameBuffer ())
+	{
+		return false;
+	}
+
+	printf("After sdl createframebuffer\n");
+
+	return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Present the frame to the screen
+void droidWindow::presentFrame ()
+//----------------------------------------------------------------------------------------------------------------------
+{
+//	ImGui::Render ();
+//	ImGui_ImplSDLRenderer_RenderDrawData (ImGui::GetDrawData ());
+	//
+	// Turn off framebuffer
+	glBindFramebuffer (GL_FRAMEBUFFER, 0);
+	glViewport (0, 0, m_windowWidth, m_windowHeight);
+	//
+	// Clear the screen
+//	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // TODO not needed with full screen framebuffer blit
+	//
+	// Use the shader for the fullscreen framebuffer
+	glUseProgram (fboShaderProgramID);
+	//
+	// Bind the framebuffer textureID to unit 0
+	glActiveTexture (GL_TEXTURE0);
+	glBindTexture (GL_TEXTURE_2D, frameBufferTextureID);
+	//
+	// Set the fragment shader to use textureID 0
+	glUniform1i (fboTextureShaderID, 0);
+
+	glBindVertexArray (fboVAO_ID);
+	//
+	// Attribute buffer : vertices
+	glEnableVertexAttribArray (0);
+	glBindBuffer (GL_ARRAY_BUFFER, fboVertexBufferID);
+	// Draw the framebuffer
+	glDrawArrays (GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
+	glDisableVertexAttribArray (0);
+	glUseProgram (0);
+
+	SDL_GL_SwapWindow (window);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Update the window title
+bool droidWindow::setWindowTitle (const std::string &newTitleText)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	SDL_SetWindowTitle (window, newTitleText.c_str ());
+
+	return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 // Get the compiled version of the window library
 std::string droidWindow::getCompiledVersion ()
 //----------------------------------------------------------------------------------------------------------------------
@@ -177,157 +343,6 @@ bool droidWindow::createFrameBuffer ()
 	return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Create the window and imGui renderer
-bool droidWindow::create (const std::string &windowName, bool useFullscreen)
-//----------------------------------------------------------------------------------------------------------------------
-{
-	if (SDL_Init (SDL_INIT_EVERYTHING) < 0)
-	{
-		lastError = sys_getString ("ERROR : SDL could not initialize. SDL Error [ %s ]", SDL_GetError ());
-		return false;
-	}
-
-	if (IMG_Init (IMG_INIT_JPG) < 0)
-	{
-		lastError = sys_getString ("ERROR : SDL_Image could not initialize. SDL Error [ %s ]", IMG_GetError ());
-		return false;
-	}
-
-	iconSurface   = SDL_LoadBMP("client/data/icon.bmp");
-	if (iconSurface != nullptr)
-		SDL_SetWindowIcon (window, iconSurface);
-	else
-		lastError = sys_getString ("Error : Window : Unable to load window icon.");
-
-	//
-	// Create the window centered at resolution
-	Uint32 windowFlags;
-
-	windowFlags = SDL_WINDOW_OPENGL;
-	if (useFullscreen)
-		windowFlags |= SDL_WINDOW_FULLSCREEN;
-
-	window = SDL_CreateWindow (windowName.c_str (), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_windowWidth, m_windowHeight, windowFlags);
-
-	// Was the window created ok
-	if (!window)
-	{
-		lastError = sys_getString ("Unable to create window : [ %s ]", SDL_GetError ());
-		return false;
-	}
-
-	/*
-	// TODO: Parse the modes and get the refresh rate
-	if ( fullScreen )
-	{
-		SDL_DisplayMode setDisplayMode;
-		setDisplayMode.refresh_rate = 75;
-		setDisplayMode.w = winWidth;
-		setDisplayMode.h = winHeight;
-		setDisplayMode.format = SDL_PIXELFORMAT_RGB888;
-		if ( SDL_SetWindowDisplayMode (mainWindow, &setDisplayMode) != 0 )
-		{
-			con_print (CON_ERROR, true, "Unable to set displaymode [ %s ]", SDL_GetError ());
-			printf ("Display error [ %s ]\n", SDL_GetError ());
-			sys_shutdownToSystem ();
-		}
-	}
-*/
-
-	// Set the OpenGL version.
-	// SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
-	SDL_GL_SetAttribute (SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-	SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 3);
-
-	SDL_GL_SetAttribute (SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
-
-#if (DEBUG_LEVEL > 0)
-	SDL_GL_SetAttribute (SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-#endif
-
-	// Create the opengl context and attach it to the window
-	openglContext    = SDL_GL_CreateContext (window);
-	if (nullptr == openglContext)
-	{
-		lastError = sys_getString ("Unable to create OpenGL context : [ %s ]", SDL_GetError ());
-		return false;
-	}
-
-	if (SDL_GL_MakeCurrent (window, openglContext) < 0)
-	{
-		lastError = sys_getString ("Context error [ %s ]", SDL_GetError ());
-		return false;
-	}
-	//
-	// Init the OpenGL extensions
-	glewExperimental = GL_TRUE;
-	auto glewReturnCode = glewInit ();
-	if (GLEW_OK != glewReturnCode)
-	{
-		lastError = sys_getString ("Failed to start OpenGL extensions : [ %s ]", glewGetErrorString (glewReturnCode));
-		return false;
-	}
-
-	// Turn on double buffering with a 24bit Z buffer.
-	// May need to change this to 16 or 32
-	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
-	if (-1 == SDL_GL_SetSwapInterval (1))
-	{
-		lastError = sys_getString ("Unable to use selected vsync method : [ %s ]", SDL_GetError ());
-		SDL_GL_SetSwapInterval (1);
-	}
-
-	if (!createFrameBuffer ())
-	{
-		return false;
-	}
-
-	/*
-	int value = 0;
-
-	SDL_GL_GetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, &value);
-	con_print (CON_INFO, true, "SDL_GL_CONTEXT_MAJOR_VERSION : %i ", value);
-
-	SDL_GL_GetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, &value);
-	con_print (CON_INFO, true, "SDL_GL_CONTEXT_MINOR_VERSION: %i ", value);
-
-	SDL_GL_GetAttribute (SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, &value);
-	con_print (CON_INFO, true, "SDL_GL_FRAMEBUFFER_SRGB_CAPABLE: %i :", value);
-*/
-	return true;
-}
-
-/*
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext ();
-	ImGuiIO &io = ImGui::GetIO ();
-	(void) io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-	if (!io.Fonts->AddFontFromFileTTF (fontName.c_str(), 18.0f))
-	{
-		m_lastError = sys_getString("Error : Could not load font file [ %s ]", fontName.c_str());
-		return false;
-	}
-	// Build atlas
-	io.Fonts->Build();
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark ();
-	//ImGui::StyleColorsClassic();
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForSDLRenderer (window);
-	ImGui_ImplSDLRenderer_Init (renderer);
-
-*/
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -375,56 +390,6 @@ void droidWindow::startFrame ()
 //	ImGui_ImplSDLRenderer_NewFrame ();
 //	ImGui_ImplSDL2_NewFrame (window);
 //	ImGui::NewFrame ();
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Present the frame to the screen
-void droidWindow::presentFrame ()
-//----------------------------------------------------------------------------------------------------------------------
-{
-//	ImGui::Render ();
-//	ImGui_ImplSDLRenderer_RenderDrawData (ImGui::GetDrawData ());
-	//
-	// Turn off framebuffer
-	glBindFramebuffer (GL_FRAMEBUFFER, 0);
-	glViewport (0, 0, m_windowWidth, m_windowHeight);
-	//
-	// Clear the screen
-//	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // TODO not needed with full screen framebuffer blit
-	//
-	// Use the shader for the fullscreen framebuffer
-	glUseProgram (fboShaderProgramID);
-	//
-	// Bind the framebuffer textureID to unit 0
-	glActiveTexture (GL_TEXTURE0);
-	glBindTexture (GL_TEXTURE_2D, frameBufferTextureID);
-	//
-	// Set the fragment shader to use textureID 0
-	glUniform1i (fboTextureShaderID, 0);
-
-	glBindVertexArray (fboVAO_ID);
-	//
-	// Attribute buffer : vertices
-	glEnableVertexAttribArray (0);
-	glBindBuffer (GL_ARRAY_BUFFER, fboVertexBufferID);
-	// Draw the framebuffer
-	glDrawArrays (GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
-	glDisableVertexAttribArray (0);
-	glUseProgram (0);
-
-	SDL_GL_SwapWindow (window);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-//
-// Update the window title
-bool droidWindow::setWindowTitle (const std::string &newTitleText)
-//----------------------------------------------------------------------------------------------------------------------
-{
-	SDL_SetWindowTitle (window, newTitleText.c_str ());
-
-	return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -2,7 +2,13 @@
 
 #include "openGL/c_glDebug.h"
 
+#define IS_CLIENT 1
 #define VERBOSE_SHADERS 1
+
+#define MAIN_LOOP_MUTEX "mainLoopMutex"
+#define EVENT_CLIENT_NETWORK_THREAD_NAME   "eventClientNetworkThread"
+#define EVENT_CLIENT_NETWORK_MUTEX_NAME    "eventClientNetworkMutex"
+
 
 // Current function macro.
 #ifdef WIN32

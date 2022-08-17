@@ -13,14 +13,6 @@ enum MESSAGE_TARGETS
 	MESSAGE_TARGET_DEBUG = 4 << 8
 };
 
-typedef struct
-{
-	std::string consoleLine;
-	int         red;
-	int         green;
-	int         blue;
-} _consoleLine;
-
 class droidMessage
 {
 public:
@@ -48,5 +40,4 @@ private:
 	std::string               logFileName{};
 	bool                      fileLoggingOn = false;
 	std::ofstream             outFile{};
-	std::vector<_consoleLine> consoleText;
 };

@@ -205,3 +205,79 @@ void droidThreadsEngine::destroyMutexes ()
 		SDL_DestroyMutex (mutexItr.mutex);
 	}
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Lock the mutex - return false on error
+bool droidThreadsEngine::lockMutex(SDL_mutex *mutexName)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	if (SDL_LockMutex (mutexName) == 0)
+	{
+		lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+		return false;
+	}
+	else
+		return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Unlock the mutex - return false on error
+bool droidThreadsEngine::unLockMutex(SDL_mutex *mutexName)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	if (SDL_UnlockMutex (mutexName) == 0)
+	{
+		lastError = "Unable to unlock mutex [ %s ] : [ %s ]", SDL_GetError();
+		return false;
+	}
+	else
+		return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Lock the mutex - return false on error
+bool droidThreadsEngine::lockMutex(const std::string &mutexName)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	for (const auto &mutexItr: registeredMutexes)
+	{
+		if (mutexItr.name == mutexName)
+		{
+			if (SDL_LockMutex (mutexItr.mutex) == 0)
+			{
+				lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+				return false;
+			}
+			else
+				return true;
+		}
+	}
+	lastError = "Unable to find mutex [ %s ]";
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// UnLock the mutex - return false on error
+bool droidThreadsEngine::unLockMutex(const std::string &mutexName)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	for (const auto &mutexItr: registeredMutexes)
+	{
+		if (mutexItr.name == mutexName)
+		{
+			if (SDL_UnlockMutex(mutexItr.mutex) == 0)
+			{
+				lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+				return false;
+			}
+			else
+				return true;
+		}
+	}
+	lastError = "Unable to find mutex [ %s ]";
+	return false;
+}

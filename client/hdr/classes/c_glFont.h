@@ -31,7 +31,7 @@ private:
 	uint            shaderProgramID{};
 	texture_atlas_t *atlas{};
 	vertex_buffer_t *buffer{};
-	texture_font_t  *font{};
+	texture_font_t  *font{nullptr};
 	float           height{};
 	std::string     lastError{};
 	std::string     vertShader = "/* Freetype GL - A C OpenGL Freetype engine\n"

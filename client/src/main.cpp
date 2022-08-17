@@ -5,14 +5,17 @@
 #include "com_language.h"
 #include "../hdr/system/c_graphics.h"
 #include "../hdr/system/c_gameEvents.h"
+#include "../hdr/system/c_console.h"
 
-droidTime     gameTime{};
-droidClient   clientNetworkObject{};
-droidMessage  clientMessage{"clientLogfile.log"};
-droidWindow   clientWindow (800, 600);
-droidLanguage clientLanguage{};
-networkState  clientNetworkState{};
-droidGLFont   clientTestFont{};
+droidThreadsEngine clientThreads{};
+droidTime          gameTime{};
+droidClient        clientNetworkObject{};
+droidMessage       clientMessage{"clientLogfile.log"};
+droidWindow        clientWindow (800, 600);
+droidLanguage      clientLanguage{};
+networkState       clientNetworkState{};
+droidGLFont        clientTestFont{};
+droidConsole       clientConsole{2, 1, 1, 1, 1};
 
 std::map<std::string, droidTexture> clientTextures{};
 
@@ -20,7 +23,7 @@ droidTexture testTexture{};
 
 CSimpleIniA iniFile{};
 
-int __gl_error_code;
+int  __gl_error_code;
 bool quitLoop = false;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -42,27 +45,33 @@ int main (int, char **)
 
 	clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString (clientLanguage.getMappedString ("clientStarted"), "Test"));
 
-	if (!clientWindow.create ("netDroid", false))
+	if (!clientWindow.create (clientLanguage.getMappedString ("clientWindowTitle"), false))
 	{
 		clientMessage.message (MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT, sys_getString (clientLanguage.getMappedString ("clientUnableCreateWindow"), clientWindow.getLastError ().c_str ()));
 		return -1;
 	}
 	gl_registerDebugCallback ();
-	clientWindow.setWindowTitle (clientLanguage.getMappedString ("clientWindowTitle"));
+
+	if (!c_createGameLoopMutex ())
+		return -1;
+
+	if (!con_initConsole ())
+		return -1;
+
+	if (!c_startNetworkMonitor ())
+		return -1;
+
+	if (!startNetworkStateThread ())
+		return -1;
 
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getLinkedVersion ().c_str ()));
 
-	if (!c_createGameLoopMutex())
-		return -1;
-
-	c_startNetworkMonitor ();
-	startNetworkStateThread ();
 	Uint32 previousTime = gameTime.getTicks ();
 
-	if (!clientTestFont.init ("Digital.ttf", 20, glm::vec2{128,128}))
+	if (!clientTestFont.init ("Digital.ttf", 20, glm::vec2{128, 128}))
 	{
-		clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("%s", clientTestFont.returnLastError().c_str()));
+		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("%s", clientTestFont.returnLastError ().c_str ()));
 		return -1;
 	}
 
@@ -76,7 +85,7 @@ int main (int, char **)
 
 	while (!quitLoop)
 	{
-		frameStart = gameTime.getTicks();
+		frameStart = gameTime.getTicks ();
 
 		previousTime      = currentTime;
 		currentTime       = gameTime.getTicks ();
@@ -88,14 +97,14 @@ int main (int, char **)
 		{
 			processClientFrame ();
 			timeLag -= msPerUpdate;
-            //thinkFPS++;
+			//thinkFPS++;
 			maxNumUpdateLoops++;
 		}
-		clientTestFont.addText (glm::vec4{0.5f, 0.5f, 0.6f, 1.0f}, glm::vec2{clientWindow.getWidth() - clientTestFont.getTextWidth("Frametime [ 88.88 ]"),
-																			 clientWindow.getHeight() - clientTestFont.getHeight()}, sys_getString("Frametime [ %2.2f ]", frameTime));
+		clientTestFont.addText (glm::vec4{0.5f, 0.5f, 0.6f, 1.0f}, glm::vec2{clientWindow.getWidth () - clientTestFont.getTextWidth ("Frametime [ 88.88 ]"),
+		                                                                     clientWindow.getHeight () - clientTestFont.getHeight ()}, sys_getString ("Frametime [ %2.2f ]", frameTime));
 		renderFrame ();
 
-		frameTime = gameTime.getTicks() - frameStart;
+		frameTime = gameTime.getTicks () - frameStart;
 	}
 
 	clientNetworkObject.destroyClient ();

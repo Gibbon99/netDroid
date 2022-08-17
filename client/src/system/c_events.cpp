@@ -20,10 +20,19 @@ void c_addEventToQueue (EventType type, EventAction action, int data1, int data2
 	switch (type)
 	{
 		case EventType::EVENT_GAME_LOOP:
-			if (SDL_LockMutex (mainLoopMutex) == 0)
+
+			if (clientThreads.lockMutex ( MAIN_LOOP_MUTEX ))
 			{
 				gameEventQueue.push (eventData);
-				SDL_UnlockMutex (mainLoopMutex);
+				clientThreads.unLockMutex ( MAIN_LOOP_MUTEX );
+			}
+			break;
+
+		case EventType::EVENT_CONSOLE:
+			if (clientThreads.lockMutex ( MAIN_LOOP_MUTEX ))
+			{
+				gameEventQueue.push (eventData);
+				clientThreads.unLockMutex ( MAIN_LOOP_MUTEX );
 			}
 			break;
 	}

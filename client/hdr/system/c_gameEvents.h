@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SDL_mutex.h>
+#include "com_threadsEngine.h"
 
-extern SDL_mutex *mainLoopMutex;
+extern droidThreadsEngine  mainLoopMutex;
 
 // Setup the mutex for the game loop queue access
 bool c_createGameLoopMutex();
