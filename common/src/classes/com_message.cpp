@@ -1,6 +1,8 @@
 #include "com_message.h"
 #include "com_util.h"
 
+#define IS_CLIENT 1
+
 void droidMessage::AddRef()
 {
 
@@ -59,11 +61,26 @@ void droidMessage::message(int target, const std::string& messageText)
 
 	if (target & MESSAGE_TARGET_CONSOLE)
 	{
-#ifdef IS_CLIENT
-		c_addEventToQueue (EVENT_CONSOLE, ACTION_CONSOLE_ADD, 255, 255, 255, glm::vec2{}, glm::vec2{}, messageText );
-#endif
-
+		consoleLines.push_back(messageText);
 	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Return all the messages meant for the console - return in vector of std::strings
+std::vector<std::string> droidMessage::getStrings()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return consoleLines;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Clear the vector of console strings - have them all in the console now
+void droidMessage::clearStrings()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	consoleLines.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -51,7 +51,7 @@ class droidConsole
 {
 public:
 
-	droidConsole (float defaultPosX, int red, int green, int blue, int alpha);
+	droidConsole (float newDefaultPosX, int red, int green, int blue, int alpha);
 
 	~droidConsole ();
 
@@ -63,21 +63,25 @@ public:
 
 	std::vector<std::string> tokeniseEntryLine (std::string entryLine);
 
-	void prepare(float newPosX, float newPosY);
+	void prepare (float newPosX, float newPosY);
 
-	float getDefaultPosX() const;
+	float getDefaultPosX () const;
+
+//	std::vector<_consoleLine>::reverse_iterator consoleItr{};
+
+	std::string getLine ();
 
 private:
 
-	int                                         defaultRed{};
-	int                                         defaultGreen{};
-	int                                         defaultBlue{};
-	int                                         defaultAlpha{};
-	int                                         userBufferIndex{};
-	int scrollbackOffset{};
-	float                                       defaultPosX{};
-	float                                       posX{};
-	float                                       posY{};
-	std::vector<_consoleLine>                   consoleText{};
-	std::vector<_consoleLine>::reverse_iterator consoleItr{};
+	int                       defaultRed{};
+	int                       defaultGreen{};
+	int                       defaultBlue{};
+	int                       defaultAlpha{};
+	int                       userBufferIndex{};
+	int                       scrollbackOffset{};
+	int                       currentLineIndex{};
+	float                     defaultPosX{};
+	float                     posX{};
+	float                     posY{};
+	std::vector<_consoleLine> consoleText{};
 };

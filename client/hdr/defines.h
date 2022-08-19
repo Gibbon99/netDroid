@@ -8,7 +8,7 @@
 #define MAIN_LOOP_MUTEX "mainLoopMutex"
 #define EVENT_CLIENT_NETWORK_THREAD_NAME   "eventClientNetworkThread"
 #define EVENT_CLIENT_NETWORK_MUTEX_NAME    "eventClientNetworkMutex"
-
+#define CONSOLE_MUTEX_NAME "consoleMutex"
 
 // Current function macro.
 #ifdef WIN32
@@ -21,7 +21,7 @@
 #ifdef _DEBUG
 #define GP_ASSERT(expression) assert(expression)
 #else
-#define GP_ASSERT( expression )
+#define GP_ASSERT(expression)
 #endif
 
 // Global variable to hold GL errors
@@ -38,7 +38,7 @@ extern int __gl_error_code;
 #ifdef NDEBUG
 #define GL_ASSERT( gl_code ) gl_code
 #else
-#define GL_ASSERT( gl_code ) do \
+#define GL_ASSERT(gl_code) do \
         { \
             gl_code; \
             __gl_error_code = glGetError(); \
@@ -48,7 +48,7 @@ extern int __gl_error_code;
 
 
 // Error macro.
-#define GL_ERROR( ... ) do \
+#define GL_ERROR(...) do \
         { \
             printf("%s -- ", __current__func__); \
             printf("\n"); \
@@ -63,7 +63,7 @@ extern int __gl_error_code;
  * macro can be used afterwards to check whether a GL error was
  * encountered executing the specified code.
  */
-#define GL_CHECK( gl_code ) do \
+#define GL_CHECK(gl_code) do \
         { \
             while (glGetError() != GL_NO_ERROR) ; \
             gl_code; \

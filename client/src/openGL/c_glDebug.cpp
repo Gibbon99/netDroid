@@ -158,7 +158,7 @@ void print_trace () // TODO Move to better file
 //--------------------------------------------------------------------------------------------
 //
 // OpenGL Debug Callback
-void GLAPIENTRY gl_DebugCallback (GLenum source, GLenum type, GLenum id, GLenum severity, GLsizei length, const GLchar *msg, const void *data)
+void GLAPIENTRY gl_DebugCallback (GLenum source, GLenum type, GLenum id, GLenum severity, [[maybe_unused]]GLsizei length, const GLchar *msg, [[maybe_unused]]const void *data)
 //--------------------------------------------------------------------------------------------
 {
 //	if ( false == g_debugOpenGL )

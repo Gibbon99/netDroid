@@ -1,23 +1,26 @@
 #include <regex>
 #include "com_console.h"
+#include "../../../client/hdr/main.h"
 
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Constructor
-droidConsole::droidConsole(float defaultPosX, int red, int green, int blue, int alpha)
+droidConsole::droidConsole (float newDefaultPosX, int red, int green, int blue, int alpha)
 //--------------------------------------------------------------------------------------------------------------------
 {
-	droidConsole::defaultRed   = red;
-	droidConsole::defaultGreen = green;
-	droidConsole::defaultBlue  = blue;
-	droidConsole::defaultAlpha = alpha;
-	droidConsole::defaultPosX  = defaultPosX;
+	defaultRed       = red;
+	defaultGreen     = green;
+	defaultBlue      = blue;
+	defaultAlpha     = alpha;
+	defaultPosX      = newDefaultPosX;
+	scrollbackOffset = 0;
+	currentLineIndex = 0;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------
 //
 // Deconstruct
-droidConsole::~droidConsole()
+droidConsole::~droidConsole ()
 //-----------------------------------------------------------------------------------------------------------------------
 {
 //	for (auto variableItr: consoleVariables)
@@ -26,21 +29,37 @@ droidConsole::~droidConsole()
 	}
 }
 
+//-----------------------------------------------------------------------------------------------------------------------
+//
+// Return a line of text - return empty string if invalid
+std::string droidConsole::getLine ()
+//-----------------------------------------------------------------------------------------------------------------------
+{
+	if (consoleText.empty())
+		return "";
+
+	if (currentLineIndex > 0)
+		currentLineIndex--;
+
+	return consoleText[currentLineIndex].lineText;
+}
+
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Prepare console
-void droidConsole::prepare(float newPosX, float newPosY)
+void droidConsole::prepare (float newPosX, float newPosY)
 //--------------------------------------------------------------------------------------------------------------------
 {
-	consoleItr = consoleText.rbegin () + scrollbackOffset;
-	posX       = newPosX;
-	posY       = newPosY;
+//	consoleItr       = consoleText.rbegin () + scrollbackOffset;
+	posX             = newPosX;
+	posY             = newPosY;
+	currentLineIndex = consoleText.size() - scrollbackOffset;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Return x Position
-float droidConsole::getDefaultPosX() const
+float droidConsole::getDefaultPosX () const
 //--------------------------------------------------------------------------------------------------------------------
 {
 	return defaultPosX;
@@ -49,7 +68,7 @@ float droidConsole::getDefaultPosX() const
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Add line to console - loop until drawing thread is finished
-void droidConsole::addLine(const _consoleLine &newTempLine)
+void droidConsole::addLine (const _consoleLine &newTempLine)
 //--------------------------------------------------------------------------------------------------------------------
 {
 	if (consoleText.size () < CONSOLE_MEM_SIZE)
@@ -59,7 +78,7 @@ void droidConsole::addLine(const _consoleLine &newTempLine)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Add new colored line of text
-void droidConsole::add(float linePosX, int red, int green, int blue, int alpha, const std::string &newLine)
+void droidConsole::add (float linePosX, int red, int green, int blue, int alpha, const std::string &newLine)
 //--------------------------------------------------------------------------------------------------------------------
 {
 	_consoleLine tempLine;
@@ -77,7 +96,7 @@ void droidConsole::add(float linePosX, int red, int green, int blue, int alpha, 
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Add line of text to console
-void droidConsole::add(const std::string &newLine)
+void droidConsole::add (const std::string &newLine)
 //--------------------------------------------------------------------------------------------------------------------
 {
 	_consoleLine tempLine;
@@ -95,7 +114,7 @@ void droidConsole::add(const std::string &newLine)
 //--------------------------------------------------------------------------------------------------------------------
 //
 // Break up entry line into tokens
-std::vector<std::string> droidConsole::tokeniseEntryLine(std::string entryLine)
+std::vector<std::string> droidConsole::tokeniseEntryLine (std::string entryLine)
 //--------------------------------------------------------------------------------------------------------------------
 {
 	//

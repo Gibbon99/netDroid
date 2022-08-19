@@ -43,6 +43,7 @@ int main (int, char **)
 	if (!clientLanguage.loadLanguageFile (clientFileMapping.getfileMappedName ("englishLangFile")))
 		c_shutdownWithError ("Unable to load a language file.");
 
+	clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, "  ");
 	clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString (clientLanguage.getMappedString ("clientStarted"), "Test"));
 
 	if (!clientWindow.create (clientLanguage.getMappedString ("clientWindowTitle"), false))
@@ -64,8 +65,8 @@ int main (int, char **)
 	if (!startNetworkStateThread ())
 		return -1;
 
-	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
-	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("%s", clientWindow.getLinkedVersion ().c_str ()));
+	clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
+	clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("%s", clientWindow.getLinkedVersion ().c_str ()));
 
 	Uint32 previousTime = gameTime.getTicks ();
 
@@ -107,5 +108,6 @@ int main (int, char **)
 		frameTime = gameTime.getTicks () - frameStart;
 	}
 
-	clientNetworkObject.destroyClient ();
+	c_shutdown();
+
 }

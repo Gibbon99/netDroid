@@ -10,3 +10,12 @@ void c_shutdownWithError (const std::string &errorMessage)
 	exit (-1);
 }
 
+//--------------------------------------------------------------------------------------------------------------------
+//
+// Shutdown normally - free all memory
+void c_shutdown()
+//--------------------------------------------------------------------------------------------------------------------
+{
+	clientNetworkObject.destroyClient ();
+	clientThreads.destroyMutexes();
+}

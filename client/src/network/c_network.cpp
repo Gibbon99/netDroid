@@ -141,6 +141,8 @@ void c_addNetworkEvent (ENetEvent newNetworkEvent)
 		networkEventsQueue.push (tempNetworkEvent);
 		clientThreads.unLockMutex (lockMutex);
 	}
+
+	delete tempNetworkEvent;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

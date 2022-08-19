@@ -11,7 +11,7 @@ droidThreadsEngine monitorNetworkStateThread{};
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Run this to check on the current network textureState of the client.  Take action depending on the textureState
-int processNetworkState (void *param)
+int processNetworkState ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	while (monitorNetworkStateThread.canThreadRun (EVENT_CLIENT_NETWORK_MONITOR_THREAD))

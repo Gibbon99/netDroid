@@ -1,6 +1,7 @@
 #include "../../hdr/system/c_renderClientFrame.h"
 #include "../../hdr/main.h"
 #include "../../hdr/system/c_graphics.h"
+#include "../../hdr/system/c_console.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -28,8 +29,10 @@ void renderFrame()
 		}
 	}
 
+	c_renderConsole();
+
 	clientTestFont.addText (glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, glm::vec2{clientWindow.getWidth() - clientTestFont.getTextWidth("Here is some new text."),50}, "Here is some new text.");
-	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{50,150}, "and a second line from the same buffer !@#.");
+//	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{0,0}, "and a second line from the same buffer !@#.");
 	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{50,150 + clientTestFont.getHeight()}, "Special CHARS !@#$%^&*()_+  {}[]\\|;':\",./<>?)");
 
 	clientTestFont.render (glm::ortho (0.0f, static_cast<float>(clientWindow.getWidth ()), 0.0f, static_cast<float>(clientWindow.getHeight ())) * (glm::mat4 (1.0f) * glm::mat4 (1.0f)));
