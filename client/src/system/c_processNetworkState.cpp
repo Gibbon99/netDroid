@@ -6,17 +6,15 @@ std::string serverAddress{"127.0.0.1"};
 
 #define EVENT_CLIENT_NETWORK_MONITOR_THREAD    "monitorNetworkStateThread"
 
-droidThreadsEngine monitorNetworkStateThread{};
-
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Run this to check on the current network textureState of the client.  Take action depending on the textureState
 int processNetworkState ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	while (monitorNetworkStateThread.canThreadRun (EVENT_CLIENT_NETWORK_MONITOR_THREAD))
+	while (clientThreads.canThreadRun (EVENT_CLIENT_NETWORK_MONITOR_THREAD))
 	{
-		if (monitorNetworkStateThread.isThreadReady (EVENT_CLIENT_NETWORK_MONITOR_THREAD))
+		if (clientThreads.isThreadReady (EVENT_CLIENT_NETWORK_MONITOR_THREAD))
 		{
 			SDL_Delay (THREAD_DELAY_MS);
 
@@ -118,23 +116,17 @@ bool startNetworkStateThread ()
 {
 	clientNetworkState.setNewState (networkStates::NETWORK_STATE_PRE_INIT);
 
-	if (!monitorNetworkStateThread.registerThread (reinterpret_cast<SDL_ThreadFunction>(processNetworkState), EVENT_CLIENT_NETWORK_MONITOR_THREAD))
+	if (!clientThreads.registerThread (reinterpret_cast<SDL_ThreadFunction>(processNetworkState), EVENT_CLIENT_NETWORK_MONITOR_THREAD))
 	{
-		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, monitorNetworkStateThread.getErrorString ());
+		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString ());
 		return false;
 	}
 	else
 		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("Thread [ %s ] registered.", EVENT_CLIENT_NETWORK_MONITOR_THREAD));
 
-	if (!monitorNetworkStateThread.setThreadReadyState (true, EVENT_CLIENT_NETWORK_MONITOR_THREAD))
+	if (!clientThreads.setThreadReadyState (true, EVENT_CLIENT_NETWORK_MONITOR_THREAD))
 	{
-		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, monitorNetworkStateThread.getErrorString());
-		return false;
-	}
-
-	if (!monitorNetworkStateThread.setThreadRunState (true, EVENT_CLIENT_NETWORK_MONITOR_THREAD))
-	{
-		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, monitorNetworkStateThread.getErrorString());
+		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, clientThreads.getErrorString());
 		return false;
 	}
 

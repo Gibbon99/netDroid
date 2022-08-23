@@ -1,4 +1,5 @@
 #include "../../hdr/system/c_events.h"
+#include "../../hdr/system/c_audio.h"
 
 //------------------------------------------------------------------------
 //
@@ -67,6 +68,13 @@ void c_handleEvents(SDL_Event event)
 				quitLoop = true;
 				break;
 		}
+	}
+
+	if (event.type == SDL_KEYDOWN)
+	{
+
+		printf("Play a loaded sample\n");
+		c_playSample("scrollBeeps", false);
 	}
 }
 

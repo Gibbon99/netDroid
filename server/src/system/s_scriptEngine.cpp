@@ -27,10 +27,16 @@ void s_scriptOutput (const asSMessageInfo *msg, [[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // This is how we call a script from the Host program : Name in Script : Name to call from host
-void s_initScriptFunctions ()
+bool s_initScriptFunctions ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	if (!serverScriptEngine.addScriptFunction ("void asRunTest()", "asRunTest"))  {serverMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("%s", serverScriptEngine.getLastError().c_str()));return false;}
+	if (!serverScriptEngine.addScriptFunction ("void asRunTest()", "asRunTest"))
+	{
+		serverMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("%s", serverScriptEngine.getLastError().c_str()));
+		return false;
+	}
+
+	return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -119,9 +125,14 @@ bool s_startScriptEngine ()
 	}
 	serverMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("Script engine started. Version [ %s ] Options [ %s ]", serverScriptEngine.getVersion ().c_str (), serverScriptEngine.getBuildOptions().c_str()));
 
-	s_initScriptFunctions ();
-	s_initScriptVariables ();
-	s_initClassFunctions ();
+	if (!s_initScriptFunctions ())
+		return false;
+
+	if (!s_initScriptVariables ())
+		return false;
+
+	if (!s_initClassFunctions ())
+		return false;
 
 	io_getScriptFileNames (serverFileMapping.getfileMappedName ("scriptsDirectory"));
 	serverScriptEngine.cacheFunctions();

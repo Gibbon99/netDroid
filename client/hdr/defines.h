@@ -3,7 +3,7 @@
 #include "openGL/c_glDebug.h"
 
 #define IS_CLIENT 1
-#define VERBOSE_SHADERS 1
+//#define VERBOSE_SHADERS 1
 
 #define MAIN_LOOP_MUTEX "mainLoopMutex"
 #define EVENT_CLIENT_NETWORK_THREAD_NAME   "eventClientNetworkThread"

@@ -16,6 +16,7 @@ enum class DATA_PACKET_TYPES
 	PACKET_NEW_CLIENT_ID = 55,
 	PACKET_NEW_USERNAME,
 	PACKET_IMAGE,
+	PACKET_AUDIO
 };
 
 typedef struct peerInformation
@@ -29,10 +30,10 @@ struct dataPacket
 {
 	DATA_PACKET_TYPES   packetType{};
 	int                 packetData{};
-	std::string         testString{};
 	int                 binarySize{};
+	std::string         testString{};
 	std::vector<int8_t> binaryData{};
 
-	PODS_SERIALIZABLE(PODS_MDR (packetType), PODS_MDR (packetData), PODS_MDR (testString), PODS_MDR (binarySize), PODS_MDR (binaryData))
+	PODS_SERIALIZABLE(PODS_MDR (packetType), PODS_MDR (packetData), PODS_MDR (binarySize), PODS_MDR (testString), PODS_MDR (binaryData))
 };
 

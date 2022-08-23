@@ -17,5 +17,6 @@ void c_shutdown()
 //--------------------------------------------------------------------------------------------------------------------
 {
 	clientNetworkObject.destroyClient ();
+	clientThreads.stopThreads();
 	clientThreads.destroyMutexes();
 }

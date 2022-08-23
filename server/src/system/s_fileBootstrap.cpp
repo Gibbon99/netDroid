@@ -69,9 +69,9 @@ int inotifyThreadFunction ([[maybe_unused]]void *param)
 	int  i = 0;
 	char buffer[BUF_LEN];
 
-	while (serverEvents.canThreadRun (EVENT_INOTIFY_THREAD_NAME))
+	while (serverThreads.canThreadRun (EVENT_INOTIFY_THREAD_NAME))
 	{
-		if (serverEvents.isThreadReady (EVENT_INOTIFY_THREAD_NAME))
+		if (serverThreads.isThreadReady (EVENT_INOTIFY_THREAD_NAME))
 		{
 			SDL_Delay (THREAD_DELAY_MS);
 
@@ -144,17 +144,23 @@ bool startiNotifyThread ()
 		return false;
 	}
 
-	if (!serverEvents.registerThread (inotifyThreadFunction, EVENT_INOTIFY_THREAD_NAME))
+	if (!serverThreads.registerThread (inotifyThreadFunction, EVENT_INOTIFY_THREAD_NAME))
 	{
-		s_shutdownWithError (sys_getString ("%s\n", serverEvents.getErrorString ().c_str ()));
+		s_shutdownWithError (sys_getString ("%s\n", serverThreads.getErrorString ().c_str ()));
 		return false;
 	}
 
-	if (!serverEvents.setThreadRunState (true, EVENT_INOTIFY_THREAD_NAME))
-		std::cout << serverEvents.getErrorString () << std::endl;
+	if (!serverThreads.setThreadRunState (true, EVENT_INOTIFY_THREAD_NAME))
+	{
+		serverMessage.message(MESSAGE_TARGET_STD_OUT, sys_getString("Unable to set thread run state inotify thread [ %s ]", serverThreads.getErrorString ().c_str()));
+		return false;
+	}
 
-	if (!serverEvents.setThreadReadyState (true, EVENT_INOTIFY_THREAD_NAME))
-		std::cout << serverEvents.getErrorString () << std::endl;
+	if (!serverThreads.setThreadReadyState (true, EVENT_INOTIFY_THREAD_NAME))
+	{
+		serverMessage.message(MESSAGE_TARGET_STD_OUT, sys_getString("Unable to set thread ready state inotify thread [ %s ]", serverThreads.getErrorString ().c_str()));
+		return false;
+	}
 
 	return true;
 }

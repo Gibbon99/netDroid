@@ -11,7 +11,7 @@
 #define EVENT_NETWORK_THREAD_NAME   "eventNetworkThread"
 #define EVENT_NETWORK_MUTEX_NAME    "eventNetworkMutex"
 
-droidThreadsEngine              serverEvents{};
+
 std::queue<droidEventNetwork *> networkEventsQueue{};
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31,17 +31,17 @@ int processEventNetwork ([[maybe_unused]]void *param)
 	// Cache getting the mutex value
 	if (nullptr == eventNetworkMutex)
 	{
-		eventNetworkMutex = serverEvents.findMutex (EVENT_NETWORK_MUTEX_NAME);
+		eventNetworkMutex = serverThreads.findMutex (EVENT_NETWORK_MUTEX_NAME);
 		if (nullptr == eventNetworkMutex)
 		{
-			std::cout << serverEvents.getErrorString ().c_str () << std::endl;
+			std::cout << serverThreads.getErrorString ().c_str () << std::endl;
 			// TODO Exit with error
 		}
 	}
 
-	while (serverEvents.canThreadRun (EVENT_NETWORK_THREAD_NAME))
+	while (serverThreads.canThreadRun (EVENT_NETWORK_THREAD_NAME))
 	{
-		if (serverEvents.isThreadReady (EVENT_NETWORK_THREAD_NAME))
+		if (serverThreads.isThreadReady (EVENT_NETWORK_THREAD_NAME))
 		{
 			SDL_Delay (THREAD_DELAY_MS);
 
@@ -49,9 +49,9 @@ int processEventNetwork ([[maybe_unused]]void *param)
 			{
 				if (nullptr != eventNetworkMutex)
 				{
-					SDL_LockMutex (eventNetworkMutex);   // Blocks if the mutex is locked by another thread
+					serverThreads.lockMutex (eventNetworkMutex);   // Blocks if the mutex is locked by another thread
 					networkEvent = networkEventsQueue.front ();
-					SDL_UnlockMutex (eventNetworkMutex);
+					serverThreads.unLockMutex (eventNetworkMutex);
 
 					switch (networkEvent->networkEvent.type)
 					{
@@ -59,9 +59,10 @@ int processEventNetwork ([[maybe_unused]]void *param)
 							printf ("A new client connected from %s:%u.\n", getHostnameFromAddress (networkEvent->networkEvent.peer->address).c_str (), networkEvent->networkEvent.peer->address.port);
 							newClientID = addNewPeer (networkEvent->networkEvent.peer);
 
-//							serverSendNewClientID (networkEvent->networkEvent.peer, newClientID);
+							serverSendNewClientID (networkEvent->networkEvent.peer, newClientID);
 
-							serverSendImageToClient (networkEvent->networkEvent.peer, "splash");
+//							serverSendMediaToClient (networkEvent->networkEvent.peer, "splash", DATA_PACKET_TYPES::PACKET_IMAGE);
+							serverSendMediaToClient (networkEvent->networkEvent.peer, "scrollBeeps", DATA_PACKET_TYPES::PACKET_AUDIO);
 //							networkEvent->networkEvent.peer->data = (void *) "Client information";
 							break;
 						case ENET_EVENT_TYPE_RECEIVE:
@@ -80,10 +81,10 @@ int processEventNetwork ([[maybe_unused]]void *param)
 						case ENET_EVENT_TYPE_NONE:
 							break;
 					}
-					SDL_LockMutex (eventNetworkMutex);          // Blocks if the mutex is locked by another thread
+					serverThreads.lockMutex (eventNetworkMutex);          // Blocks if the mutex is locked by another thread
 					delete (networkEventsQueue.front ());       // Free memory
 					networkEventsQueue.pop ();
-					SDL_UnlockMutex (eventNetworkMutex);
+					serverThreads.unLockMutex (eventNetworkMutex);
 				}
 			}
 		}
@@ -97,27 +98,27 @@ int processEventNetwork ([[maybe_unused]]void *param)
 bool startEventNetwork ()
 //----------------------------------------------------------------------------------------------------------------------
 {
-	if (!serverEvents.registerMutex (EVENT_NETWORK_MUTEX_NAME))
+	if (!serverThreads.registerMutex (EVENT_NETWORK_MUTEX_NAME))
 	{
-		printf ("%s\n", serverEvents.getErrorString ().c_str ());
+		printf ("%s\n", serverThreads.getErrorString ().c_str ());
 		return false;
 	}
 	else
 		printf ("Mutex [ %s ] registered.\n", EVENT_NETWORK_MUTEX_NAME);
 
-	if (!serverEvents.registerThread (processEventNetwork, EVENT_NETWORK_THREAD_NAME))
+	if (!serverThreads.registerThread (processEventNetwork, EVENT_NETWORK_THREAD_NAME))
 	{
-		printf ("%s\n", serverEvents.getErrorString ().c_str ());
+		printf ("%s\n", serverThreads.getErrorString ().c_str ());
 		return false;
 	}
 	else
 		printf ("Thread [ %s ] registered.\n", EVENT_NETWORK_THREAD_NAME);
 
-	if (!serverEvents.setThreadRunState (true, EVENT_NETWORK_THREAD_NAME))
-		std::cout << serverEvents.getErrorString () << std::endl;
+	if (!serverThreads.setThreadRunState (true, EVENT_NETWORK_THREAD_NAME))
+		std::cout << serverThreads.getErrorString () << std::endl;
 
-	if (!serverEvents.setThreadReadyState (true, EVENT_NETWORK_THREAD_NAME))
-		std::cout << serverEvents.getErrorString () << std::endl;
+	if (!serverThreads.setThreadReadyState (true, EVENT_NETWORK_THREAD_NAME))
+		std::cout << serverThreads.getErrorString () << std::endl;
 
 	return true;
 }
@@ -133,17 +134,17 @@ void addNetworkEvent (ENetEvent newNetworkEvent)
 
 	if (nullptr == lockMutex)
 	{
-		lockMutex = serverEvents.findMutex (EVENT_NETWORK_MUTEX_NAME);
+		lockMutex = serverThreads.findMutex (EVENT_NETWORK_MUTEX_NAME);
 		if (nullptr == lockMutex)
-			s_shutdownWithError (sys_getString ("%s\n", serverEvents.getErrorString ().c_str ()));
+			s_shutdownWithError (sys_getString ("%s\n", serverThreads.getErrorString ().c_str ()));
 	}
 
 	tempNetworkEvent = new droidEventNetwork (newNetworkEvent);
 	//
 	// Put the new event onto the logfile queue
-	SDL_LockMutex (lockMutex);   // Blocks if the mutex is locked by another thread
+	serverThreads.lockMutex (lockMutex);   // Blocks if the mutex is locked by another thread
 	networkEventsQueue.push (tempNetworkEvent);
-	SDL_UnlockMutex (lockMutex);
+	serverThreads.unLockMutex (lockMutex);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -166,30 +167,23 @@ void serverSendNewClientID (ENetPeer *peerInfo, int newClientID)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Send an image over the network
-void serverSendImageToClient (ENetPeer *peerInfo, std::string imageName)
+void serverSendMediaToClient (ENetPeer *peerInfo, std::string mediaName, DATA_PACKET_TYPES packetType)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	dataPacket newPacket;
 
-	auto tempBuffer = binaryFiles[imageName].getBlob ();
+	auto tempBuffer = binaryFiles[mediaName].getBlob ();
 
-	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&tempBuffer[0]), binaryFiles[imageName].getBlobSize ());
+	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&tempBuffer[0]), binaryFiles[mediaName].getBlobSize ());
 	if (nullptr == rw)
 	{
 		serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create RWops [ %s ]", SDL_GetError ()));
 		return;
 	}
 
-	auto tempSurface = IMG_LoadJPG_RW (rw);
-	if (nullptr == tempSurface)
-	{
-		serverMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Unable to load image from server memory [ %s ]", SDL_GetError ()));
-		return;
-	}
-
-	newPacket.packetType = DATA_PACKET_TYPES::PACKET_IMAGE;
+	newPacket.packetType = packetType;
 	newPacket.packetData = 0;
-	newPacket.testString = std::move (imageName);
+	newPacket.testString = std::move (mediaName);
 	newPacket.binarySize = binaryFiles[newPacket.testString].getBlobSize ();
 
 	for (int i = 0; i != newPacket.binarySize; i++)

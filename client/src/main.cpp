@@ -3,9 +3,6 @@
 #include "../hdr/system/c_fileBootstrap.h"
 #include "../hdr/system/c_shutdown.h"
 #include "com_language.h"
-#include "../hdr/system/c_graphics.h"
-#include "../hdr/system/c_gameEvents.h"
-#include "../hdr/system/c_console.h"
 
 droidThreadsEngine clientThreads{};
 droidTime          gameTime{};
@@ -16,6 +13,7 @@ droidLanguage      clientLanguage{};
 networkState       clientNetworkState{};
 droidGLFont        clientTestFont{};
 droidConsole       clientConsole{2, 1, 1, 1, 1};
+droidAudio         clientAudio{};
 
 std::map<std::string, droidTexture> clientTextures{};
 
@@ -76,6 +74,12 @@ int main (int, char **)
 		return -1;
 	}
 
+	if (!clientAudio.init())
+	{
+		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("%s", clientAudio.getLastError().c_str()));
+		return -1;
+	}
+
 	SDL_Delay (500);    // Give the network stack time to start
 
 	clientNetworkState.setNewState (networkStates::NETWORK_STATE_TRY_SERVER_CONNECT);
@@ -108,6 +112,5 @@ int main (int, char **)
 		frameTime = gameTime.getTicks () - frameStart;
 	}
 
-	c_shutdown();
-
+	c_shutdown ();
 }

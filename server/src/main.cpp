@@ -20,13 +20,14 @@
 
 #endif
 
-droidTime     gameTime{};
-droidServer   serverObject{};
-droidSignals  signalHandler{};
-droidMessage  serverMessage{"serverLogfile.log"};
-droidLanguage serverLanguage{};
-droidScript   serverScriptEngine{};
-droidConsole    serverConsole{1, 1, 1, 1, 1};
+droidTime          gameTime{};
+droidServer        serverObject{};
+droidSignals       signalHandler{};
+droidMessage       serverMessage{"serverLogfile.log"};
+droidLanguage      serverLanguage{};
+droidScript        serverScriptEngine{};
+droidConsole       serverConsole{1, 1, 1, 1, 1};
+droidThreadsEngine serverThreads{};
 
 CSimpleIniA iniFile;
 bool        quitLoop{false};
@@ -37,7 +38,6 @@ std::string languageFileType{"englishLangFile"};
 
 int main (int, char **)
 {
-
 	Uint32 currentTime{0};
 	Uint32 maxNumUpdateLoops{0};
 	double msPerUpdate = 1000.0f / TICKS_PER_SECOND;
@@ -70,7 +70,7 @@ int main (int, char **)
 	SDL_Init (SDL_INIT_EVERYTHING);
 
 	if (!s_startScriptEngine ())
-		s_shutdownWithError(serverLanguage.getMappedString("scriptStartError"));
+		s_shutdownWithError (serverLanguage.getMappedString ("scriptStartError"));
 
 	while (!quitLoop)
 	{

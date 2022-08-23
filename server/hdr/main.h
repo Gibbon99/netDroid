@@ -8,11 +8,12 @@
 #include "com_texture.h"
 #include "com_binaryBlob.h"
 #include "com_droidScript.h"
+#include "com_threadsEngine.h"
 
-extern bool          quitLoop;
-extern droidServer   serverObject;
-extern droidMessage  serverMessage;
-extern droidLanguage serverLanguage;
-extern droidScript   serverScriptEngine;
-
-extern droidBinaryBlob testBinaryFile;
+extern bool               quitLoop;
+extern droidServer        serverObject;
+extern droidMessage       serverMessage;
+extern droidLanguage      serverLanguage;
+extern droidScript        serverScriptEngine;
+extern droidThreadsEngine serverThreads;
+extern droidBinaryBlob    testBinaryFile;

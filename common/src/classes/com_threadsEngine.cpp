@@ -41,7 +41,7 @@ std::string droidThreadsEngine::sys_getString (std::string formatIn, ...)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Return the textureState 'run' for this thread passed by name
+// Return the state 'run' for this thread passed by name
 // Return error message in 'm_lastError' string if required
 bool droidThreadsEngine::canThreadRun (const std::string &threadName)
 //----------------------------------------------------------------------------------------------------------------------
@@ -74,12 +74,12 @@ bool droidThreadsEngine::setThreadRunState (int newState, const std::string &thr
 	{
 		if (threadName == threadItr.name)
 		{
-			threadItr.run = newState;
 			lastError = "";
+			threadItr.run = newState;
 			return true;
 		}
 	}
-	lastError = sys_getString ("Attempting to set run textureState for unknown thread [ %s ].", __func__, threadName.c_str ());
+	lastError = sys_getString ("Attempting to set run state for unknown thread [ %s ].", __func__, threadName.c_str ());
 	return false;
 }
 
@@ -93,8 +93,8 @@ bool droidThreadsEngine::setThreadReadyState (bool newState, const std::string &
 	{
 		if (threadName == threadItr.name)
 		{
-			threadItr.ready = newState;
 			lastError = "";
+			threadItr.ready = newState;
 			return true;
 		}
 	}
@@ -113,6 +113,7 @@ bool droidThreadsEngine::isThreadReady (const std::string &threadName)
 	{
 		if (threadName == threadItr.name)
 		{
+			lastError = "";
 			return threadItr.ready;
 		}
 	}
@@ -139,12 +140,13 @@ bool droidThreadsEngine::registerThread (SDL_ThreadFunction threadFunction, cons
 
 	newThread.name  = threadName;
 	newThread.run   = true;
-	newThread.ready = false;
-	registeredThreads.push_back (newThread);
+	newThread.ready = true;
 	//
 	// Create vector element first
 	// Thread was being created too fast and running before the vector element was created
 	// resulting in no elements being available when size() was tested
+	registeredThreads.push_back (newThread);
+	SDL_Delay (100);
 	registeredThreads[registeredThreads.size () - 1].thread = SDL_CreateThread (*threadFunction, threadName.c_str (), nullptr);
 	if (nullptr == registeredThreads[registeredThreads.size () - 1].thread)
 	{
@@ -154,6 +156,12 @@ bool droidThreadsEngine::registerThread (SDL_ThreadFunction threadFunction, cons
 
 	setThreadReadyState (false, threadName);
 	SDL_DetachThread (registeredThreads[registeredThreads.size () - 1].thread);
+
+	printf("There are [ %zu ] threads in effect.\n", registeredThreads.size());
+	for (const auto& threadItr : registeredThreads)
+	{
+		printf("Registered threads in array [ %s ]\n", threadItr.name.c_str());
+	}
 	return true;
 }
 
@@ -173,6 +181,14 @@ bool droidThreadsEngine::registerMutex (const std::string &mutexName)
 		return false;
 	}
 	registeredMutexes.push_back (newMutex);
+
+	printf("There are [ %zu ] mutexes created.\n", registeredMutexes.size());
+	for (const auto& mutexItr : registeredMutexes)
+	{
+		printf("Mutex [ %s ] in effect.\n", mutexItr.name.c_str());
+	}
+
+
 	return true;
 }
 
@@ -186,6 +202,7 @@ SDL_mutex *droidThreadsEngine::findMutex (const std::string &mutexName)
 	{
 		if (mutexItr.name == mutexName)
 		{
+			lastError = "";
 			return mutexItr.mutex;
 		}
 	}
@@ -212,13 +229,16 @@ void droidThreadsEngine::destroyMutexes ()
 bool droidThreadsEngine::lockMutex(SDL_mutex *mutexName)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	if (SDL_LockMutex (mutexName) == 0)
+	if (SDL_LockMutex (mutexName) < 0)
 	{
-		lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+		lastError = sys_getString("Unable to lock mutex [ %s ]", SDL_GetError());
 		return false;
 	}
 	else
+	{
+		lastError = "No error";
 		return true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -227,13 +247,16 @@ bool droidThreadsEngine::lockMutex(SDL_mutex *mutexName)
 bool droidThreadsEngine::unLockMutex(SDL_mutex *mutexName)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	if (SDL_UnlockMutex (mutexName) == 0)
+	if (SDL_UnlockMutex (mutexName) < 0)
 	{
-		lastError = "Unable to unlock mutex [ %s ] : [ %s ]", SDL_GetError();
+		lastError = sys_getString("Unable to unlock mutex [ %s ]", SDL_GetError());
 		return false;
 	}
 	else
+	{
+		lastError = "No error";
 		return true;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -246,16 +269,19 @@ bool droidThreadsEngine::lockMutex(const std::string &mutexName)
 	{
 		if (mutexItr.name == mutexName)
 		{
-			if (SDL_LockMutex (mutexItr.mutex) == 0)
+			if (SDL_LockMutex (mutexItr.mutex) < 0)
 			{
-				lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+				lastError = sys_getString("Unable to lock mutex [ %s ] : [ %s ]", mutexName.c_str(), SDL_GetError());
 				return false;
 			}
 			else
+			{
+				lastError = "No error";
 				return true;
+			}
 		}
 	}
-	lastError = "Unable to find mutex [ %s ]";
+	lastError = sys_getString("Unable to find mutex [ %s ]", mutexName.c_str());
 	return false;
 }
 
@@ -269,15 +295,18 @@ bool droidThreadsEngine::unLockMutex(const std::string &mutexName)
 	{
 		if (mutexItr.name == mutexName)
 		{
-			if (SDL_UnlockMutex(mutexItr.mutex) == 0)
+			if (SDL_UnlockMutex(mutexItr.mutex) < 0)
 			{
-				lastError = "Unable to lock mutex [ %s ] : [ %s ]", SDL_GetError();
+				lastError = sys_getString("Unable to unLock mutex [ %s ] : [ %s ]", mutexName.c_str(), SDL_GetError());
 				return false;
 			}
 			else
+			{
+				lastError = "No error";
 				return true;
+			}
 		}
 	}
-	lastError = "Unable to find mutex [ %s ]";
+	lastError = sys_getString("Unable to find mutex [ %s ]", mutexName.c_str());
 	return false;
 }

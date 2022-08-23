@@ -111,7 +111,7 @@ GLuint c_getShaderID (const std::string &shaderName)
 //-----------------------------------------------------------------------------
 //
 // Draw a 2d textured quad
-void c_draw2DQaud_ext (glm::vec2 position, glm::vec2 quadSize, const std::string &whichShaer, GLuint whichTexture)
+void c_draw2DQuad_ext (glm::vec2 position, glm::vec2 quadSize, [[maybe_unused]]const std::string &whichShaer, [[maybe_unused]]GLuint whichTexture)
 //-----------------------------------------------------------------------------
 {
 	GLfloat Vertices[] = {position.x, position.y, 0, position.x + quadSize.x, position.y, 0, position.x + quadSize.x, position.y + quadSize.y, 0, position.x, position.y + quadSize.y, 0};

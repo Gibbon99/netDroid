@@ -34,6 +34,8 @@ void c_renderConsole ()
 		if (lineCounter == numLinesToRender)
 			break;
 	}
+
+	clientTestFont.render (glm::ortho (0.0f, static_cast<float>(clientWindow.getWidth ()), 0.0f, static_cast<float>(clientWindow.getHeight ())) * (glm::mat4 (1.0f) * glm::mat4 (1.0f)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

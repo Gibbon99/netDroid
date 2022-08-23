@@ -141,16 +141,17 @@ bool _droidShaders::cacheVarLocation ()
 			auto tempLocation = glGetUniformLocation (m_programID, varItr.first.c_str ());
 			m_locationID[varItr.first] = varInfo{true, 0, tempLocation, "uniform"}; // TODO Error check this
 
+#ifdef VERBOSE_SHADERS
 			printf("Uniform [ %s ] - Location [ %i ]\n", varItr.first.c_str(), tempLocation);
-
+#endif
 		}
 		else
 		{
 			auto tempLocation = glGetAttribLocation (m_programID, varItr.first.c_str ());
 			m_locationID[varItr.first] = varInfo{true, 0, tempLocation, "attribute"};
-
+#ifdef VERBOSE_SHADERS
 			printf("Attribute [ %s ] - Location [ %i ]\n", varItr.first.c_str(), tempLocation);
-
+#endif
 		}
 	}
 	return true;

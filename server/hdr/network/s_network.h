@@ -4,8 +4,6 @@
 #include "classes/com_threadsEngine.h"
 #include "com_netEvents.h"
 
-extern droidThreadsEngine              serverEvents;
-
 // Called at startup to register the network processing thread and function
 bool startEventNetwork();
 
@@ -16,4 +14,4 @@ void addNetworkEvent(ENetEvent newNetworkEvent);
 void serverSendNewClientID(ENetPeer *peerInfo, int newClientID);
 
 // Send an image over the network
-void serverSendImageToClient (ENetPeer *peerInfo, std::string imageName);
+void serverSendMediaToClient (ENetPeer *peerInfo, std::string mediaName, DATA_PACKET_TYPES packetType);

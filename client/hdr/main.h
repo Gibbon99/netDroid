@@ -21,6 +21,10 @@
 #include "../hdr/classes/client.h"
 #include "../hdr/classes/c_glFont.h"
 #include "com_console.h"
+#include "../hdr/system/c_graphics.h"
+#include "../hdr/system/c_gameEvents.h"
+#include "../hdr/system/c_console.h"
+#include "../hdr/classes/c_audioClass.h"
 
 extern droidThreadsEngine clientThreads;
 extern droidClient        clientNetworkObject;
@@ -29,6 +33,7 @@ extern droidMessage       clientMessage;
 extern droidWindow        clientWindow;
 extern droidGLFont        clientTestFont;
 extern droidConsole       clientConsole;
+extern droidAudio         clientAudio;
 
 extern std::map<std::string, droidTexture> clientTextures;
 

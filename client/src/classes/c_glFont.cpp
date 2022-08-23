@@ -49,7 +49,7 @@ bool droidGLFont::init (const std::string& fontName, float fontSize, glm::vec2 t
 
 	atlas = texture_atlas_new (static_cast<size_t>(textureSize.x), static_cast<size_t>(textureSize.y), 1);
 
-	//	texture_font_new_from_memory ()     TODO - Get font file from server - load from memory
+	//	texture_font_new_from_memory ()     TODO - Get font file from server - load from memory - implement embedded font
 
 	font   = texture_font_new_from_file (atlas, fontSize, fontName.c_str ());
 	if (nullptr == font)
