@@ -121,15 +121,23 @@ bool droidAudioStruct::isPlaying()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Play on the next available channel
-bool droidAudio::play(std::string audioName, bool loop)
+bool droidAudio::play(std::string_view audioName, bool loop)
 //----------------------------------------------------------------------------------------------------------------------
 {
+	Mix_Chunk *playChunk{nullptr};
+
 	for (auto &audioItr: audioFile)
 	{
 		if (audioItr.getAudioName () == audioName)
 		{
-			if (audioItr.isLoaded() == true)
+			if (audioItr.isLoaded ())
 			{
+				playChunk = audioItr.getChunk();
+				if (nullptr == playChunk)
+				{
+					lastError = sys_getString("Unable to load playChunk. Can not play sound [ %s ]", audioName.data());
+					return false;
+				}
 				if (-1 == Mix_PlayChannel (-1, audioItr.getChunk (), loop))
 				{
 					lastError = sys_getString("Unable to play audio : [ %s ]", Mix_GetError());
@@ -146,12 +154,12 @@ bool droidAudio::play(std::string audioName, bool loop)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Load an audio chunk into audioNamed slot
-bool droidAudio::load(const std::string& audioName, Mix_Chunk *newAudioChunk)
+bool droidAudio::load(std::string_view audioName, Mix_Chunk *newAudioChunk)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	droidAudioStruct tempAudioFile{};
 
-	tempAudioFile.setAudioName(audioName);
+	tempAudioFile.setAudioName(audioName.data());
 	tempAudioFile.setChunk (newAudioChunk);
 	tempAudioFile.setPlaying(false);
 	tempAudioFile.setLoaded(true);
@@ -160,7 +168,7 @@ bool droidAudio::load(const std::string& audioName, Mix_Chunk *newAudioChunk)
 	{
 		if (audioItr.getAudioName() == audioName)
 		{
-			lastError = sys_getString("Audio sample [ %s ] is already loaded.", audioName.c_str());
+			lastError = sys_getString("Audio sample [ %s ] is already loaded.", audioName.data());
 			return false;
 		}
 	}

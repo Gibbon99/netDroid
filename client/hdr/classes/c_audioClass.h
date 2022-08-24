@@ -38,9 +38,9 @@ class droidAudio
 public:
 	bool init ();
 
-	bool play (std::string audioName, bool loop);
+	bool play (std::string_view audioName, bool loop);
 
-	bool load (const std::string &audioName, Mix_Chunk *newAudioChunk);
+	bool load (std::string_view audioName, Mix_Chunk *newAudioChunk);
 
 	std::string getLastError ();
 

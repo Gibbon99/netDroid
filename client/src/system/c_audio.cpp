@@ -11,9 +11,7 @@ void c_convertPacketToAudio (dataPacket newDataPacket)
 	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&newDataPacket.binaryData[0]), newDataPacket.binarySize);
 	if (nullptr == rw)
 	{
-		clientTextures[newDataPacket.testString].setSurfaceState (NOT_LOADED);
-		clientTextures[newDataPacket.testString].setTextureState (NOT_LOADED);
-		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create RWops [ %s ]", SDL_GetError ()));
+		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create audio RWops [ %s ]", SDL_GetError ()));
 		return;
 	}
 
@@ -24,7 +22,9 @@ void c_convertPacketToAudio (dataPacket newDataPacket)
 		return;
 	}
 
-	clientAudio.load (newDataPacket.testString, Mix_LoadWAV_RW (rw, 0));
+	clientAudio.load (newDataPacket.testString, tempChunk);
+
+	clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("Loaded audio from network packet [ %s ]", newDataPacket.testString.c_str()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

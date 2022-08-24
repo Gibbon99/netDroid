@@ -215,6 +215,7 @@ void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 			break;
 
 		case DATA_PACKET_TYPES::PACKET_AUDIO:
+			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got audio packet. Name [ %s ] Size [ %i ].", dataPacketIn.testString.c_str (), dataPacketIn.binarySize));
 			c_convertPacketToAudio (dataPacketIn);
 			break;
 
