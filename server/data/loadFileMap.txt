@@ -1,3 +1,4 @@
+clientInitScript#server/data/clientScripts/clientInit.sc
 watchDirectory#server/data
 scriptsDirectory#server/data/scripts
 englishLangFile#server/data/english.lang

@@ -7,14 +7,10 @@
 #else
 
 #include "SDL2/SDL.h"
-#include "com_globals.h"
 #include "../hdr/classes/s_signals.h"
-
-#include "com_netEvents.h"
 #include "../hdr/network/s_network.h"
 #include "../hdr/system/s_processFrame.h"
 #include "../hdr/system/s_fileBootstrap.h"
-#include "com_droidScript.h"
 #include "../hdr/system/s_scriptEngine.h"
 #include "com_console.h"
 
@@ -57,7 +53,7 @@ int main (int, char **)
 	serverMessage.message (MESSAGE_TARGET_LOGFILE | MESSAGE_TARGET_STD_OUT, serverLanguage.getMappedString ("signalInstalled"));
 	//
 	// Start listening for network events
-	if (!startEventNetwork ())
+	if (!s_startEventNetworkThread ())
 		s_shutdownWithError (serverLanguage.getMappedString ("eventSystemError"));
 
 	Uint32 previousTime = gameTime.getTicks ();

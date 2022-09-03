@@ -113,7 +113,7 @@ bool droidThreadsEngine::isThreadReady (const std::string &threadName)
 	{
 		if (threadName == threadItr.name)
 		{
-			lastError = "";
+			lastError = "No error";
 			return threadItr.ready;
 		}
 	}
@@ -156,12 +156,6 @@ bool droidThreadsEngine::registerThread (SDL_ThreadFunction threadFunction, cons
 
 	setThreadReadyState (false, threadName);
 	SDL_DetachThread (registeredThreads[registeredThreads.size () - 1].thread);
-
-	printf("There are [ %zu ] threads in effect.\n", registeredThreads.size());
-	for (const auto& threadItr : registeredThreads)
-	{
-		printf("Registered threads in array [ %s ]\n", threadItr.name.c_str());
-	}
 	return true;
 }
 
@@ -181,13 +175,6 @@ bool droidThreadsEngine::registerMutex (const std::string &mutexName)
 		return false;
 	}
 	registeredMutexes.push_back (newMutex);
-
-	printf("There are [ %zu ] mutexes created.\n", registeredMutexes.size());
-	for (const auto& mutexItr : registeredMutexes)
-	{
-		printf("Mutex [ %s ] in effect.\n", mutexItr.name.c_str());
-	}
-
 
 	return true;
 }

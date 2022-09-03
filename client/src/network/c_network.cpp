@@ -1,10 +1,36 @@
 #include "../../hdr/network/c_network.h"
-#include "../../hdr/system/c_graphics.h"
-#include "../../hdr/system/c_audio.h"
+#include "../../hdr/system/c_requests.h"
+#include "../../hdr/system/c_events.h"
 
 int networkFetchDelayMS{10};
 
 std::queue<droidEventNetwork> networkEventsQueueClient{};
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Send a request packet to the server
+void c_sendRequestToServer (const std::string& packetName, DATA_PACKET_TYPES packetType)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	dataPacket newPacket;
+
+	newPacket.packetType   = packetType;
+	newPacket.clientID     = clientPeer.ID;
+	newPacket.packetData   = 0;
+	newPacket.packetString = packetName;
+	newPacket.binarySize   = 0;
+	newPacket.binaryData.clear ();
+
+	clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString ("Send request to [ %s:%i ]", getHostnameFromAddress (clientPeer.peerInfo.address).c_str (), clientPeer.peerInfo.address.port));
+
+	if (!com_sendDataToPeer(clientNetworkObject.getPeerPointer(), newPacket))
+	{
+		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, "An error occurred attempting to send data to server.");
+		return;
+	}
+
+	c_addRequestToQueue (packetName, packetType);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -14,8 +40,7 @@ std::queue<droidEventNetwork> networkEventsQueueClient{};
 int processClientEventNetwork ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
-//	droidEventNetwork *networkEvent{};
-	static SDL_mutex  *eventNetworkMutex{nullptr};
+	static SDL_mutex *eventNetworkMutex{nullptr};
 
 	//
 	// Cache getting the mutex value
@@ -28,10 +53,6 @@ int processClientEventNetwork ([[maybe_unused]]void *param)
 
 	while (clientThreads.canThreadRun (EVENT_CLIENT_NETWORK_THREAD_NAME))
 	{
-
-//		printf("CanThreadRun [ %s ]\n", clientThreads.canThreadRun(EVENT_CLIENT_NETWORK_THREAD_NAME) ? "true" : "false");
-
-
 		if (clientThreads.isThreadReady (EVENT_CLIENT_NETWORK_THREAD_NAME))
 		{
 
@@ -39,60 +60,61 @@ int processClientEventNetwork ([[maybe_unused]]void *param)
 
 			if (!networkEventsQueueClient.empty ())   // Events in the queue to process
 			{
-
-				printf ("Number of network events in queue [ %lu ]\n", networkEventsQueueClient.size ());
-
-
 				if (clientThreads.lockMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME))   // Blocks if the mutex is locked by another thread
 				{
-
-					printf ("Inside mutex lock - getting networkEvent from queue front.\n");
-
 					auto networkEvent = networkEventsQueueClient.front ();
-					networkEventsQueueClient.pop();
-
-					printf ("Inside mutex lock - Type is [ %i ].\n", networkEvent.networkEvent.type);
+					networkEventsQueueClient.pop ();
 
 					switch (networkEvent.networkEvent.type)
 					{
 						case ENET_EVENT_TYPE_CONNECT:
+							memcpy (&clientPeer.peerInfo, networkEvent.networkEvent.peer, sizeof (clientPeer.peerInfo));
+							std::cout << " EVENT_TYPE_CONNECT : " << getPeerState (clientPeer.peerInfo.state).c_str () << std::endl;
 
-							printf ("Got ENET_EVENT_TYPE_CONNECT\n\n");
+							clientNetworkObject.setConnectionComplete (true);
 
-							clientMessage.message (MESSAGE_TARGET_DEBUG | MESSAGE_TARGET_STD_OUT |
-							                       MESSAGE_TARGET_CONSOLE, sys_getString ("Connection to [ %s:%i ] succeeded.", getHostnameFromAddress (networkEvent.networkEvent.peer->address).c_str (), networkEvent.networkEvent.peer->address.port));
+							clientMessage.message (MESSAGE_TARGET_DEBUG | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("Connection to [ %s:%i ] succeeded.", getHostnameFromAddress (networkEvent.networkEvent.peer->address).c_str (), networkEvent.networkEvent.peer->address.port));
 							clientNetworkState.setNewState (networkStates::NETWORK_STATE_CONNECT_SUCCESS);
+
+							clientMessage.message (MESSAGE_TARGET_DEBUG | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("Set clientPeer to server address [ %s:%i ]", getHostnameFromAddress (clientPeer.peerInfo.address).c_str (), clientPeer.peerInfo.address.port));
+
+							c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_REQUEST_INIT_SCRIPT, 200, 0, 0, 0, glm::vec2{}, glm::vec2{}, "ACTION_REQUEST_INIT_SCRIPT");
+
 							break;
 
 						case ENET_EVENT_TYPE_DISCONNECT:
+//							memcpy (&clientPeer.peerInfo, networkEvent.networkEvent.peer, sizeof (clientPeer.peerInfo));
+							std::cout << " ENET_EVENT_TYPE_DISCONNECT : " << getPeerState (clientPeer.peerInfo.state).c_str () << std::endl;
+
 							clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("%s disconnected.", getHostnameFromAddress (networkEvent.networkEvent.peer->address).c_str ()));
-							/* Reset the peer's client information. */
+							//
+							// Reset the peer's client information.
 							networkEvent.networkEvent.peer->data = nullptr;
+
 							break;
 
 						case ENET_EVENT_TYPE_RECEIVE:
+//							memcpy (&clientPeer.peerInfo, networkEvent.networkEvent.peer, sizeof (clientPeer.peerInfo));
+							std::cout << " ENET_EVENT_TYPE_RECEIVE : " << getPeerState (clientPeer.peerInfo.state).c_str () << std::endl;
+
 							clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("A packet of length %zu containing %s was received from %s on channel %u.", networkEvent.networkEvent.packet->dataLength, static_cast<char *>(networkEvent.networkEvent.peer->data), getHostnameFromAddress (networkEvent.networkEvent.peer->address).c_str (), networkEvent.networkEvent.channelID));
 							c_processServerPacket (networkEvent.networkEvent.packet, networkEvent.networkEvent.packet->dataLength);
 							//
 							// Clean up the packet now that we're done using it.
 							enet_packet_destroy (networkEvent.networkEvent.packet);
+
 							break;
 
 						case ENET_EVENT_TYPE_NONE:
+							std::cout << " ENET_EVENT_TYPE_NONE : " << getPeerState (clientPeer.peerInfo.state).c_str () << std::endl;
 							break;
 					}
-//				SDL_LockMutex (eventNetworkMutex);   // Blocks if the mutex is locked by another thread
-//				delete (networkEventsQueue.front ());      // Free memory
-//					networkEventsQueue.pop ();
-//				SDL_UnlockMutex (eventNetworkMutex);
-
-
 					clientThreads.unLockMutex (EVENT_CLIENT_NETWORK_MUTEX_NAME);
 				}
 				else
 				{
 					printf ("ERROR: Could not lock network event mutex [ %s ]\n\n", EVENT_CLIENT_NETWORK_MUTEX_NAME);
-//					exit(-1);
+					exit (-1);
 					// TODO - Quit with error - could not lock mutex
 
 				}
@@ -102,7 +124,6 @@ int processClientEventNetwork ([[maybe_unused]]void *param)
 	clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Thread [ %s ] finished.", EVENT_CLIENT_NETWORK_THREAD_NAME));
 	return 1;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -146,7 +167,7 @@ bool c_startNetworkMonitor ()
 void c_addNetworkEvent (ENetEvent newNetworkEvent)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	static SDL_mutex  *lockMutex = nullptr;
+	static SDL_mutex *lockMutex = nullptr;
 	//
 	// Cache mutex value
 	if (lockMutex == nullptr)
@@ -160,21 +181,15 @@ void c_addNetworkEvent (ENetEvent newNetworkEvent)
 	}
 
 	//
-	// Put the new event onto the logfile queue
+	// Put the new event onto the network queue
 	if (clientThreads.lockMutex (lockMutex))
 	{
-		printf ("Got a network event. Pushing it onto the queue.\n\n");
-
 		networkEventsQueueClient.emplace (newNetworkEvent);
-
-		printf ("Added new network event to network queue - size [ %zu ]\n", networkEventsQueueClient.size ());
-		printf ("New type is [ %i ]\n", networkEventsQueueClient.front ().networkEvent.type);
-
 		clientThreads.unLockMutex (lockMutex);
 	}
 	else
 	{
-		printf ("LOCK FAILED : %s\n\n", clientThreads.getErrorString ().c_str ());
+		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("LOCK FAILED [ %s ]", clientThreads.getErrorString ().c_str ()));
 	}
 }
 
@@ -200,8 +215,8 @@ void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 		case DATA_PACKET_TYPES::PACKET_NEW_CLIENT_ID:
 
 			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got ID from server [ %i ].", dataPacketIn.packetData));
-			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got string [ %s ] from server.", dataPacketIn.testString.c_str ()));
-			updateClientPeerID (dataPacketIn.packetData);
+			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got string [ %s ] from server.", dataPacketIn.packetString.c_str ()));
+			updateClientPeerID (dataPacketIn);
 			// TODO - Get client address
 //			updateClientPeerUsername(sys_getString("netDroid-%s", getHostnameFromAddress (newDataPacket..  clientNetworkObject.getHostPointer()->address).c_str()));
 			break;
@@ -210,13 +225,17 @@ void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 			break;
 
 		case DATA_PACKET_TYPES::PACKET_IMAGE:
-			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got image packet. Name [ %s ] Size [ %i ].", dataPacketIn.testString.c_str (), dataPacketIn.binarySize));
+			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got image packet. Name [ %s ] Size [ %i ].", dataPacketIn.packetString.c_str (), dataPacketIn.binarySize));
 			c_convertPacketToSurface (dataPacketIn);
 			break;
 
 		case DATA_PACKET_TYPES::PACKET_AUDIO:
-			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got audio packet. Name [ %s ] Size [ %i ].", dataPacketIn.testString.c_str (), dataPacketIn.binarySize));
+			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got audio packet. Name [ %s ] Size [ %i ].", dataPacketIn.packetString.c_str (), dataPacketIn.binarySize));
 			c_convertPacketToAudio (dataPacketIn);
+			break;
+
+		case DATA_PACKET_TYPES::PACKET_SCRIPT:
+			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got script packet. Name [ %s ] Size [ %i ].", dataPacketIn.packetString.c_str (), dataPacketIn.binarySize));
 			break;
 
 		default:

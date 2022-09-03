@@ -61,28 +61,28 @@ void c_convertPacketToSurface (dataPacket newDataPacket)
 {
 	droidTexture tempTexture;
 
-	clientTextures.insert (std::pair<std::string, droidTexture> (newDataPacket.testString, tempTexture));
-	clientTextures[newDataPacket.testString].setName (newDataPacket.testString);
+	clientTextures.insert (std::pair<std::string, droidTexture> (newDataPacket.packetString, tempTexture));
+	clientTextures[newDataPacket.packetString].setName (newDataPacket.packetString);
 
 	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&newDataPacket.binaryData[0]), newDataPacket.binarySize);
 	if (nullptr == rw)
 	{
-		clientTextures[newDataPacket.testString].setSurfaceState (NOT_LOADED);
-		clientTextures[newDataPacket.testString].setTextureState (NOT_LOADED);
+		clientTextures[newDataPacket.packetString].setSurfaceState (NOT_LOADED);
+		clientTextures[newDataPacket.packetString].setTextureState (NOT_LOADED);
 		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create RWops [ %s ]", SDL_GetError ()));
 		return;
 	}
 
-	clientTextures[newDataPacket.testString].setSurface (IMG_Load_RW (rw, 0), true);
-	if (nullptr == clientTextures[newDataPacket.testString].getSurface ())
+	clientTextures[newDataPacket.packetString].setSurface (IMG_Load_RW (rw, 0), true);
+	if (nullptr == clientTextures[newDataPacket.packetString].getSurface ())
 	{
-		clientTextures[newDataPacket.testString].setSurfaceState (NOT_LOADED);
-		clientTextures[newDataPacket.testString].setTextureState (NOT_LOADED);
-		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Unable to load image [ %s ] from memory ; [ %s ]", newDataPacket.testString.c_str (), SDL_GetError ()));
+		clientTextures[newDataPacket.packetString].setSurfaceState (NOT_LOADED);
+		clientTextures[newDataPacket.packetString].setTextureState (NOT_LOADED);
+		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Unable to load image [ %s ] from memory ; [ %s ]", newDataPacket.packetString.c_str (), SDL_GetError ()));
 		return;
 	}
 
-	c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_UPLOAD_TEXTURE, 0, 0, 0, glm::vec2{}, glm::vec2{}, newDataPacket.testString);
+	c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_UPLOAD_TEXTURE, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, newDataPacket.packetString);
 }
 
 //-----------------------------------------------------------------------------

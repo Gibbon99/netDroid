@@ -1,7 +1,6 @@
 #include "../../hdr/system/s_scriptEngine.h"
 #include "../../hdr/main.h"
-#include "../../../client/hdr/main.h"
-#include "../../hdr/system/s_fileBootstrap.h"
+//#include "../../../client/hdr/main.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //

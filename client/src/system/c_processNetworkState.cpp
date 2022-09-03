@@ -1,5 +1,4 @@
 #include "../../hdr/system/c_processNetworkState.h"
-#include "../../hdr/system/c_clientPeerInfo.h"
 
 int         serverPort = 1234;
 std::string serverAddress{"127.0.0.1"};
@@ -44,7 +43,6 @@ int processNetworkState ([[maybe_unused]]void *param)
 
 				case networkStates::NETWORK_STATE_TRY_SERVER_CONNECT:
 					clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Attempt connection to server...");
-					clientNetworkState.setNewState (networkStates::NETWORK_STATE_ATTEMPTING_CONNECT);
 					if (clientNetworkState.isNetworkStarted ())
 					{
 						if (!clientNetworkObject.connectToServer (serverAddress, serverPort))
@@ -55,6 +53,7 @@ int processNetworkState ([[maybe_unused]]void *param)
 						else
 						{
 							clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, "Connection request sent to server.");
+							clientNetworkState.setNewState (networkStates::NETWORK_STATE_ATTEMPTING_CONNECT);
 						}
 					}
 					else

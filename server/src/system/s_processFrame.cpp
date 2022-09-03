@@ -11,10 +11,7 @@ void getNetworkEvents ()
 
 	while (enet_host_service (serverObject.getHostPointer (), &event, 0) > 0)
 	{
-
-		printf("Server - processing network events.\n");
-
-		addNetworkEvent (event);
+		s_addNetworkEventToQueue (event);
 	}
 }
 

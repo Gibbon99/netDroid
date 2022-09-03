@@ -45,6 +45,15 @@ ENetHost *droidClient::getHostPointer ()
 
 //----------------------------------------------------------------------------------------------------------------------
 //
+// Return a pointer to the peer informtion
+ENetPeer *droidClient::getPeerPointer ()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return peer;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
 // Connect to a server
 bool droidClient::connectToServer (const std::string &newServerHostname, int newServerPort)
 //----------------------------------------------------------------------------------------------------------------------
@@ -58,4 +67,22 @@ bool droidClient::connectToServer (const std::string &newServerHostname, int new
 		return false;
 
 	return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Called from ENET_EVENT_CONNECT - which is when the connection is really complete
+void droidClient::setConnectionComplete(bool newConnectionState)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	connectionComplete = newConnectionState;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Get if the connection is really complete or not
+bool droidClient::getConnectionComplete()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return connectionComplete;
 }

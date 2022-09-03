@@ -3,7 +3,7 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// Class constructor - create mutex to allow safe access to textureState variables from threads
+// Class constructor - create mutex to allow safe access to networkState variables from threads
 networkState::networkState ()
 //----------------------------------------------------------------------------------------------------------------------
 {

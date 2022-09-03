@@ -39,8 +39,6 @@ std::string getHostnameFromAddress (ENetAddress whichAddress)
 	std::string hostNameReturn{};
 	char        hostName[128];
 
-	printf ("Get host from address [ %u ]\n", whichAddress.host);
-
 	if (whichAddress.host != 0)
 		enet_address_get_host (&whichAddress, reinterpret_cast<char *>(&hostName), 128);
 	else
@@ -155,6 +153,7 @@ std::string getGLErrorString (int errorNum)
 std::string readTextFile(const std::string &fileName)
 //--------------------------------------------------------------------------------------------------------------------
 {
+	// TODO - Error checking
 	//
 	// open the file:
 	std::ifstream file(fileName);
@@ -170,4 +169,87 @@ std::string readTextFile(const std::string &fileName)
 	file.read (&fileContents[0], fileSize);
 
 	return fileContents;
+}
+
+//--------------------------------------------------------------------------------------------------------------------
+//
+// Return string representing the current state of the peer
+std::string getPeerState(int currentState)
+//--------------------------------------------------------------------------------------------------------------------
+{
+
+	switch (currentState)
+	{
+		case ENET_PEER_STATE_DISCONNECTED:
+			return "ENET_PEER_STATE_DISCONNECTED";
+			break;
+
+		case ENET_PEER_STATE_CONNECTING:
+			return "ENET_PEER_STATE_CONNECTING";
+			break;
+
+		case ENET_PEER_STATE_ACKNOWLEDGING_CONNECT:
+			return "ENET_PEER_STATE_ACKNOWLEDGING_CONNECT";
+			break;
+
+		case ENET_PEER_STATE_CONNECTION_PENDING:
+			return "ENET_PEER_STATE_CONNECTION_PENDING";
+			break;
+
+		case ENET_PEER_STATE_CONNECTION_SUCCEEDED:
+			return "ENET_PEER_STATE_CONNECTION_SUCCEEDED";
+			break;
+
+		case ENET_PEER_STATE_CONNECTED:
+			return "ENET_PEER_STATE_CONNECTED";
+			break;
+
+		case ENET_PEER_STATE_DISCONNECT_LATER:
+			return "ENET_PEER_STATE_DISCONNECT_LATER";
+			break;
+
+		case ENET_PEER_STATE_DISCONNECTING:
+			return "ENET_PEER_STATE_DISCONNECTING";
+			break;
+
+		case ENET_PEER_STATE_ACKNOWLEDGING_DISCONNECT:
+			return "ENET_PEER_STATE_ACKNOWLEDGING_DISCONNECT";
+			break;
+
+		case ENET_PEER_STATE_ZOMBIE:
+			return "ENET_PEER_STATE_ZOMBIE";
+			break;
+
+		default:
+			return "ENET Unknown peer state.";
+	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------
+//
+// Turn an enet event type into a string
+std::string getEventType(int whichEventType)
+//--------------------------------------------------------------------------------------------------------------------
+{
+	switch (whichEventType)
+	{
+		case ENET_EVENT_TYPE_NONE:
+			return "ENET_EVENT_TYPE_NONE";
+			break;
+
+		case ENET_EVENT_TYPE_CONNECT:
+			return "ENET_EVENT_TYPE_CONNECT";
+			break;
+
+		case ENET_EVENT_TYPE_DISCONNECT:
+			return "ENET_EVENT_TYPE_DISCONNECT";
+			break;
+
+		case ENET_EVENT_TYPE_RECEIVE:
+			return "ENET_EVENT_TYPE_RECEIVE";
+			break;
+
+		default:
+			return "Unknown ENET event type";
+	}
 }

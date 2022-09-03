@@ -32,3 +32,9 @@ std::string getGLErrorString (int errorNum);
 
 // Read a text file from the filesystem into a std::string
 std::string readTextFile(const std::string &fileName);
+
+// Return string representing the current state of the peer
+std::string getPeerState(int currentState);
+
+// Turn an enet event type into a string
+std::string getEventType(int whichEventType);

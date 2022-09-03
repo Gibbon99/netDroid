@@ -18,13 +18,13 @@ void c_convertPacketToAudio (dataPacket newDataPacket)
 	auto tempChunk = Mix_LoadWAV_RW (rw, 0);
 	if (nullptr == tempChunk)
 	{
-		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("Unable to load audio [ %s ] ; [ %s ]", newDataPacket.testString.c_str(), Mix_GetError()));
+		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("Unable to load audio [ %s ] ; [ %s ]", newDataPacket.packetString.c_str(), Mix_GetError()));
 		return;
 	}
 
-	clientAudio.load (newDataPacket.testString, tempChunk);
+	clientAudio.load (newDataPacket.packetString, tempChunk);
 
-	clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("Loaded audio from network packet [ %s ]", newDataPacket.testString.c_str()));
+	clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("Loaded audio from network packet [ %s ]", newDataPacket.packetString.c_str()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

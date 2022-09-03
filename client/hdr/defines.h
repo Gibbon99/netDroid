@@ -9,6 +9,8 @@
 #define EVENT_CLIENT_NETWORK_THREAD_NAME   "eventClientNetworkThread"
 #define EVENT_CLIENT_NETWORK_MUTEX_NAME    "eventClientNetworkMutex"
 #define CONSOLE_MUTEX_NAME "consoleMutex"
+#define EVENT_CLIENT_REQUESTS_MUTEX_NAME "clientRequestsMutex"
+#define EVENT_CLIENT_REQUESTS_THREAD_NAME "clientRequestsThread"
 
 // Current function macro.
 #ifdef WIN32

@@ -8,6 +8,7 @@
 #include "com_texture.h"
 #include "../../hdr/main.h"
 #include "../../hdr/system/c_clientPeerInfo.h"
+#include "../../hdr/system/c_audio.h"
 
 extern int networkFetchDelayMS;
 
@@ -19,3 +20,6 @@ void c_addNetworkEvent(ENetEvent newNetworkEvent);
 
 // Process a data packet received from the server
 void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize);
+
+// Send a request packet to the server
+void c_sendRequestToServer (const std::string& packetName, DATA_PACKET_TYPES packetType);

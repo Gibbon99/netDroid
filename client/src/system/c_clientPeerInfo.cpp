@@ -6,10 +6,10 @@ peerInformation     clientPeer{};
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Update the clientPeer information with the ID from the server
-void updateClientPeerID(int newID)
+void updateClientPeerID(const dataPacket& newDataPacket)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	clientPeer.ID = newID;
+	clientPeer.ID = newDataPacket.packetData;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

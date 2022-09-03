@@ -3,6 +3,7 @@
 #include <enet/enet.h>
 #include <cstdio>
 #include "com_globals.h"
+#include "com_util.h"
 
 //------------------------------------------------------------------------------------------------------------------
 //
@@ -16,11 +17,11 @@ public:
     {
         networkEvent = event;
 
-		printf("Added networkEvent - type [ %i ]\n", networkEvent.type);
+		printf("Added networkEvent - type [ %s ]\n", getEventType(networkEvent.type).c_str());
     }
 
 	ENetEvent networkEvent{};
 };
 
 // Send a data packet to the nominated peer
-void com_sendDataToPeer (ENetPeer *whichPeer, const dataPacket& newDataPacket);
+bool com_sendDataToPeer (ENetPeer *whichPeer, dataPacket &newDataPacket);

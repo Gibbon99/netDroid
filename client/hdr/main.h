@@ -25,7 +25,9 @@
 #include "../hdr/system/c_gameEvents.h"
 #include "../hdr/system/c_console.h"
 #include "../hdr/classes/c_audioClass.h"
+#include "com_droidScript.h"
 
+extern droidTime          gameTime;
 extern droidThreadsEngine clientThreads;
 extern droidClient        clientNetworkObject;
 extern networkState       clientNetworkState;
@@ -34,9 +36,21 @@ extern droidWindow        clientWindow;
 extern droidGLFont        clientTestFont;
 extern droidConsole       clientConsole;
 extern droidAudio         clientAudio;
+extern droidScript        clientServerEngine;
 
 extern std::map<std::string, droidTexture> clientTextures;
 
 extern CSimpleIniA iniFile;
 
 extern bool quitLoop;
+
+enum class MODE_TYPES
+{
+	MODE_REQUEST_WAIT = 0,
+	MODE_REQUEST_INIT_SCRIPT,
+	MODE_WAIT_FOR_INIT_SCRIPT,
+	MODE_LOAD_RESOURCES,
+	MODE_SPLASH_SCREEN
+};
+
+extern MODE_TYPES currentMode;

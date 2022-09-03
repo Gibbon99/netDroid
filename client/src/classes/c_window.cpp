@@ -22,9 +22,6 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		lastError = sys_getString ("ERROR : SDL could not initialize. SDL Error [ %s ]", SDL_GetError ());
 		return false;
 	}
-
-	printf("[ %u ] After sdl init\n", SDL_GetTicks ());
-
 	//
 	// Create the window centered at resolution
 	Uint32 windowFlags;
@@ -48,12 +45,8 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 #if (DEBUG_LEVEL > 0)
 	SDL_GL_SetAttribute (SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 #endif
-	printf("[ %u ] Before1 sdl create window\n", SDL_GetTicks ());
-
 	window = SDL_CreateWindow (windowName.c_str (), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_windowWidth, m_windowHeight, windowFlags);
-
-	printf("[ %u ] After sdl create window\n", SDL_GetTicks ());
-
+	//
 	// Was the window created ok
 	if (!window)
 	{
@@ -66,9 +59,7 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		SDL_SetWindowIcon (window, iconSurface);
 	else
 		lastError = sys_getString ("Error : Window : Unable to load window icon.");
-
-	printf("[ %u ] After sdl load bmp\n", SDL_GetTicks ());
-
+	//
 	// Create the opengl context and attach it to the window
 	openglContext    = SDL_GL_CreateContext (window);
 	if (nullptr == openglContext)
@@ -77,16 +68,11 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		return false;
 	}
 
-	printf("[ %u ] After sdl create context\n", SDL_GetTicks ());
-
 	if (SDL_GL_MakeCurrent (window, openglContext) < 0)
 	{
 		lastError = sys_getString ("Context error [ %s ]", SDL_GetError ());
 		return false;
 	}
-
-	printf("[ %u ] After sdl make current\n", SDL_GetTicks ());
-
 	//
 	// Init the OpenGL extensions
 	glewExperimental = GL_TRUE;
@@ -96,9 +82,7 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		lastError = sys_getString ("Failed to start OpenGL extensions : [ %s ]", glewGetErrorString (glewReturnCode));
 		return false;
 	}
-
-	printf("After sdl glewinit\n");
-
+	//
 	// Turn on double buffering with a 24bit Z buffer.
 	// May need to change this to 16 or 32
 	SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, 1);
@@ -114,15 +98,10 @@ bool droidWindow::create (const std::string &windowName, bool useFullscreen)
 		return false;
 	}
 
-	printf("[ %u ] After init jpg\n", SDL_GetTicks ());
-
-
 	if (!createFrameBuffer ())
 	{
 		return false;
 	}
-
-	printf("After sdl createframebuffer\n");
 
 	return true;
 }

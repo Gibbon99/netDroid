@@ -1,50 +1,49 @@
 #include "../../hdr/system/c_events.h"
-#include "../../hdr/system/c_audio.h"
 
 //------------------------------------------------------------------------
 //
 // Create a custom event and add it to the relevant queue
-void c_addEventToQueue (EventType type, EventAction action, int data1, int data2, int data3, const glm::vec2 vec2_1, const glm::vec2 vec2_2, std::string textString )
+void c_addEventToQueue (EventType type, EventAction action, int newDelayCounter, int data1, int data2, int data3, const glm::vec2 vec2_1, const glm::vec2 vec2_2, std::string textString)
 //------------------------------------------------------------------------
 {
 	myEventData_ eventData;
 
-	eventData.eventType   = type;
-	eventData.eventAction = action;
-	eventData.data1       = data1;
-	eventData.data2       = data2;
-	eventData.data3       = data3;
-	eventData.vec2_1      = vec2_1;
-	eventData.vec2_2      = vec2_2;
-	eventData.eventString = std::move (textString);
+	eventData.eventType    = type;
+	eventData.eventAction  = action;
+	eventData.data1        = data1;
+	eventData.data2        = data2;
+	eventData.data3        = data3;
+	eventData.vec2_1       = vec2_1;
+	eventData.vec2_2       = vec2_2;
+	eventData.delayCounter = newDelayCounter;
+	eventData.eventString  = std::move (textString);
 
 	switch (type)
 	{
 		case EventType::EVENT_GAME_LOOP:
 
-			if (clientThreads.lockMutex ( MAIN_LOOP_MUTEX ))
+			if (clientThreads.lockMutex (MAIN_LOOP_MUTEX))
 			{
 				gameEventQueue.push (eventData);
-				clientThreads.unLockMutex ( MAIN_LOOP_MUTEX );
+				clientThreads.unLockMutex (MAIN_LOOP_MUTEX);
 			}
 			break;
 
 		case EventType::EVENT_CONSOLE:
-			if (clientThreads.lockMutex ( MAIN_LOOP_MUTEX ))
+			if (clientThreads.lockMutex (MAIN_LOOP_MUTEX))
 			{
 				gameEventQueue.push (eventData);
-				clientThreads.unLockMutex ( MAIN_LOOP_MUTEX );
+				clientThreads.unLockMutex (MAIN_LOOP_MUTEX);
 			}
 			break;
 	}
 
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Handle SDL events from main loop
-void c_handleEvents(SDL_Event event)
+void c_handleEvents (SDL_Event event)
 //----------------------------------------------------------------------------------------------------------------------
 {
 //	ImGui_ImplSDL2_ProcessEvent (&event);
@@ -72,9 +71,8 @@ void c_handleEvents(SDL_Event event)
 
 	if (event.type == SDL_KEYDOWN)
 	{
-
-		printf("Play a loaded sample\n");
-		c_playSample("scrollBeeps", false);
+		printf ("Play a loaded sample\n");
+		c_playSample ("scrollBeeps", false);
 	}
 }
 
@@ -86,8 +84,23 @@ void c_getNetworkEvents ()
 {
 	ENetEvent event;
 
-	while (enet_host_service (clientNetworkObject.getHostPointer (), &event, 0) > 0)
+	if (clientNetworkObject.getConnectionComplete ())
 	{
+		if (clientNetworkObject.getHostPointer ()->address.host == 0)
+		{
+//		std::cout << "Invalid destination address in c_getNetworkEvents." << std::endl;
+//			return;
+		}
+	}
+
+	auto hostService = clientNetworkObject.getHostPointer();
+
+//	while (enet_host_service (hostService, &event, 0) > 0)
+	while (enet_host_service (hostService->peers->host, &event, 0) > 0)
+	{
+
+		std::cout << "Client - running enet_host_service." << std::endl;
+
 		c_addNetworkEvent (event);
 	}
 }

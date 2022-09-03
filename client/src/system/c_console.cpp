@@ -41,7 +41,7 @@ void c_renderConsole ()
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Start the console processing queue and thread
-bool con_initConsole ()
+bool c_initConsole ()
 //----------------------------------------------------------------------------------------------------------------------
 {
 //	console.setScreenSize (hiresVirtualWidth, hiresVirtualHeight);

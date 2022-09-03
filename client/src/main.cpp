@@ -3,6 +3,8 @@
 #include "../hdr/system/c_fileBootstrap.h"
 #include "../hdr/system/c_shutdown.h"
 #include "com_language.h"
+#include "../hdr/system/c_scriptEngine.h"
+#include "../hdr/system/c_requests.h"
 
 droidThreadsEngine clientThreads{};
 droidTime          gameTime{};
@@ -14,6 +16,7 @@ networkState       clientNetworkState{};
 droidGLFont        clientTestFont{};
 droidConsole       clientConsole{2, 1, 1, 1, 1};
 droidAudio         clientAudio{};
+droidScript        clientServerEngine{};
 
 std::map<std::string, droidTexture> clientTextures{};
 
@@ -54,13 +57,19 @@ int main (int, char **)
 	if (!c_createGameLoopMutex ())
 		return -1;
 
-	if (!con_initConsole ())
+	if (!c_initConsole ())
+		return -1;
+
+	if (!c_initRequestQueue ())
 		return -1;
 
 	if (!c_startNetworkMonitor ())
 		return -1;
 
 	if (!startNetworkStateThread ())
+		return -1;
+
+	if (!c_startScriptEngine ())
 		return -1;
 
 	clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString ("%s", clientWindow.getCompiledVersion ().c_str ()));
@@ -74,9 +83,9 @@ int main (int, char **)
 		return -1;
 	}
 
-	if (!clientAudio.init())
+	if (!clientAudio.init ())
 	{
-		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("%s", clientAudio.getLastError().c_str()));
+		clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("%s", clientAudio.getLastError ().c_str ()));
 		return -1;
 	}
 
