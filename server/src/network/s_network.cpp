@@ -254,15 +254,25 @@ void s_sendShaderToClient (ENetPeer *peerInfo, std::string shaderName)
 void s_sendScriptToClient (int whichClient, std::string scriptName)
 //----------------------------------------------------------------------------------------------------------------------
 {
-	auto newScriptSection = readTextFile(scriptName);
-
 	dataPacket newPacket;
+	//
+	// Read in the script file
+	auto newScriptSection = readTextFile(scriptName);
+	if (newScriptSection.empty())
+	{
+		serverMessage.message(MESSAGE_TARGET_STD_OUT, sys_getString("Unable to load client script file [ %s ]", scriptName.c_str()));
+		return; // TODO resubmit and send error to client
+	}
 
 	newPacket.packetType   = DATA_PACKET_TYPES::PACKET_SCRIPT;
 	newPacket.packetData   = whichClient;
-	newPacket.packetString = newScriptSection;
-	newPacket.binarySize   = 0;
+	newPacket.packetString = scriptName;
+	//
+	// Copy script contents into packet
 	newPacket.binaryData.clear ();
+	std::copy(newScriptSection.begin(), newScriptSection.end(), std::back_inserter(newPacket.binaryData));
+	newPacket.binarySize = newPacket.binaryData.size();
+	newPacket.crc = CRC::Calculate(newPacket.binaryData.data(), newPacket.binaryData.size(), CRC::CRC_32());
 
 	if (!com_sendDataToPeer ( &peers[whichClient].peerInfo, newPacket))
 	{

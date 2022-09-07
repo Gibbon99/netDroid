@@ -6,6 +6,7 @@
 #include <pods.h>
 #include <pods/msgpack.h>
 #include <pods/buffers.h>
+#include "com_crc.h"
 
 #define TICKS_PER_SECOND 30.0f
 #define MAX_FRAMESKIP 5
@@ -37,7 +38,8 @@ struct dataPacket
 	int                 binarySize{};
 	std::string         packetString{};
 	std::vector<int8_t> binaryData{};
+	uint32_t            crc;
 
-	PODS_SERIALIZABLE(PODS_MDR (packetType), PODS_MDR (clientID), PODS_MDR (packetData), PODS_MDR (binarySize), PODS_MDR (packetString), PODS_MDR (binaryData))
+	PODS_SERIALIZABLE(PODS_MDR (packetType), PODS_MDR (clientID), PODS_MDR (packetData), PODS_MDR (binarySize), PODS_MDR (packetString), PODS_MDR (binaryData), PODS_MDR(crc))
 };
 

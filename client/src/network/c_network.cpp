@@ -1,6 +1,7 @@
 #include "../../hdr/network/c_network.h"
 #include "../../hdr/system/c_requests.h"
 #include "../../hdr/system/c_events.h"
+#include "../../hdr/system/c_scriptEngine.h"
 
 int networkFetchDelayMS{10};
 
@@ -236,6 +237,7 @@ void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 
 		case DATA_PACKET_TYPES::PACKET_SCRIPT:
 			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got script packet. Name [ %s ] Size [ %i ].", dataPacketIn.packetString.c_str (), dataPacketIn.binarySize));
+			c_convertPacketToScript(dataPacketIn);
 			break;
 
 		default:

@@ -84,23 +84,10 @@ void c_getNetworkEvents ()
 {
 	ENetEvent event;
 
-	if (clientNetworkObject.getConnectionComplete ())
-	{
-		if (clientNetworkObject.getHostPointer ()->address.host == 0)
-		{
-//		std::cout << "Invalid destination address in c_getNetworkEvents." << std::endl;
-//			return;
-		}
-	}
-
 	auto hostService = clientNetworkObject.getHostPointer();
 
-//	while (enet_host_service (hostService, &event, 0) > 0)
 	while (enet_host_service (hostService->peers->host, &event, 0) > 0)
 	{
-
-		std::cout << "Client - running enet_host_service." << std::endl;
-
 		c_addNetworkEvent (event);
 	}
 }

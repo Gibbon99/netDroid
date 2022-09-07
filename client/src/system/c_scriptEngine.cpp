@@ -114,3 +114,22 @@ bool c_startScriptEngine ()
 
 	return  true;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Convert a script data packet to a script
+void c_convertPacketToScript(dataPacket dataPacketIn)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	auto scriptContents = std::string(dataPacketIn.binaryData.begin(), dataPacketIn.binaryData.end());
+
+	auto testCRC = CRC::Calculate(scriptContents.c_str(), scriptContents.size(), CRC::CRC_32());
+
+	if (testCRC != dataPacketIn.crc)
+	{
+		clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("CRC mismatch between script contents. Needed [ %i ] - Got [ %i ]", dataPacketIn.crc, testCRC).c_str());
+		return;
+	}
+
+	clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Contents \n\n %s \n", scriptContents.c_str()));
+}

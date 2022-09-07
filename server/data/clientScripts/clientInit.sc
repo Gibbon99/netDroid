@@ -4,5 +4,5 @@
 void clientInit()
 //--------------------------------------------------------------------------------------------------------------------
 {
-
+// Here is some more text in the client startup script file
 }
