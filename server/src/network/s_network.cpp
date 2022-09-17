@@ -2,7 +2,6 @@
 #include <utility>
 #include <SDL_image.h>
 #include "../../hdr/network/s_network.h"
-#include "com_globals.h"
 #include "../../hdr/system/s_peers.h"
 #include "../../hdr/main.h"
 #include "../../hdr/system/s_shutdown.h"
@@ -38,7 +37,7 @@ void s_processClientPacket (ENetPacket *newDataPacket, size_t dataSize)
 
 			serverMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString ("Received init script request from client [ %i ].", fromClientID));
 
-			s_sendScriptToClient (dataPacketIn.clientID, serverFileMapping.getfileMappedName("clientInitScript"));
+			s_sendScriptToClient (dataPacketIn.clientID, serverFileMapping.getfileMappedName ("clientInitScript"), DATA_PACKET_TYPES::PACKET_INIT_SCRIPT);
 			break;
 
 		default:
@@ -251,7 +250,7 @@ void s_sendShaderToClient (ENetPeer *peerInfo, std::string shaderName)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Send a script file to the client
-void s_sendScriptToClient (int whichClient, std::string scriptName)
+void s_sendScriptToClient (int whichClient, std::string scriptName, DATA_PACKET_TYPES whichScriptType)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	dataPacket newPacket;
@@ -264,7 +263,7 @@ void s_sendScriptToClient (int whichClient, std::string scriptName)
 		return; // TODO resubmit and send error to client
 	}
 
-	newPacket.packetType   = DATA_PACKET_TYPES::PACKET_SCRIPT;
+	newPacket.packetType   = whichScriptType;
 	newPacket.packetData   = whichClient;
 	newPacket.packetString = scriptName;
 	//

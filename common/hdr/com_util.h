@@ -38,3 +38,6 @@ std::string getPeerState(int currentState);
 
 // Turn an enet event type into a string
 std::string getEventType(int whichEventType);
+
+// Return the base file name from a path string
+std::string getFilenameFromString(std::string const & path);

@@ -1,7 +1,6 @@
 #include "../../hdr/system/c_renderClientFrame.h"
 #include "../../hdr/main.h"
-#include "../../hdr/system/c_graphics.h"
-#include "../../hdr/system/c_console.h"
+#include "../../hdr/system/c_requests.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -61,7 +60,7 @@ void renderFrame ()
 
 	if (clientNetworkObject.getConnectionComplete())
 	clientTestFont.addText (glm::vec4{0.5f, 0.5f, 0.6f, 1.0f}, glm::vec2{5, clientWindow.getHeight () - (clientTestFont.getHeight () * 3)},
-	                        sys_getString("Host : %s", getHostnameFromAddress (clientNetworkObject.getPeerPointer()->address).c_str()));
+	                        sys_getString("Host : %s Request Count : %i", getHostnameFromAddress (clientNetworkObject.getPeerPointer()->address).c_str(), c_getNumWaitingRequests()));
 
 //	clientTestFont.addText (glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, glm::vec2{clientWindow.getWidth() - clientTestFont.getTextWidth("Here is some new text."),50}, "Here is some new text.");
 //	clientTestFont.addText (glm::vec4{1.0f, 0.0f, 1.0f, 1.0f}, glm::vec2{0,0}, "and a second line from the same buffer !@#.");

@@ -28,6 +28,8 @@ std::string c_getModeString(MODE_TYPES whichMode)
 			return "MODE_SPLASH_SCREEN";
 			break;
 	}
+
+	return "UNKNOWN_GAME_MODE";
 }
 
 //------------------------------------------------------------------------------------------------------------------

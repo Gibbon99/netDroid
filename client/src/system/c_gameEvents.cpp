@@ -60,10 +60,18 @@ void c_processGameEventQueue ()
 				break;
 
 			case EventAction::ACTION_REQUEST_INIT_SCRIPT:
-
-				std::cout << "About to changeMode to Request Init Script." << std::endl;
-
 				c_changeMode (MODE_TYPES::MODE_REQUEST_INIT_SCRIPT);
+				break;
+
+			case EventAction::ACTION_RUN_SCRIPT_FUNCTION:
+				if (!clientScriptEngine.run(tempEventData.eventString, ""))
+				{
+					clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Error running script [ %s ] - [ %s ]", tempEventData.eventString.c_str(), clientScriptEngine.getLastError().c_str()));
+					return;
+				}
+
+				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, "After running clientInit function in script");
+
 				break;
 
 			default:

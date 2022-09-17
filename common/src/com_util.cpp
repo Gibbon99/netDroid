@@ -253,3 +253,12 @@ std::string getEventType(int whichEventType)
 			return "Unknown ENET event type";
 	}
 }
+
+//--------------------------------------------------------------------------------------------------------------------
+//
+// Return the base file name from a path string
+std::string getFilenameFromString(std::string const & path)
+//--------------------------------------------------------------------------------------------------------------------
+{
+	return path.substr(path.find_last_of("/") + 1);
+}

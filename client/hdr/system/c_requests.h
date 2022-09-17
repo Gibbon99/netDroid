@@ -6,8 +6,8 @@
 struct requestType_
 {
 	std::string       requestString{};
-	int               requestTime{};
-	int               requestCount{};     // How many iimes has this been requested
+	uint32_t          requestTime{};
+	int               requestCount{};     // How many times has this been requested
 	DATA_PACKET_TYPES requestType{};
 };
 
@@ -21,3 +21,6 @@ bool c_initRequestQueue ();
 
 // Add a new request to the queue
 void c_addRequestToQueue (std::string newRequestString, DATA_PACKET_TYPES newRequestType);
+
+// Return how many waiting requests there are
+int c_getNumWaitingRequests ();

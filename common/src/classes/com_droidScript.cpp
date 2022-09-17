@@ -1,6 +1,16 @@
 #include "com_droidScript.h"
 #include "com_util.h"
 
+void droidScript::AddRef()
+{
+
+}
+
+void droidScript::ReleaseRef()
+{
+
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Return the last error string
@@ -454,6 +464,8 @@ bool droidScript::cacheFunctions()
 			tempFunctionName.functionName = funcItr.functionName;
 			tempFunctionName.scriptName   = funcItr.scriptName;
 			tempFunctionName.fromScript   = funcItr.fromScript;
+
+			printf("Script function name [ %s ]", tempFunctionName.functionName.c_str());
 
 			scriptFunctions.push_back (tempFunctionName);
 		}

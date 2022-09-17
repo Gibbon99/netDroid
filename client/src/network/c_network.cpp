@@ -29,8 +29,6 @@ void c_sendRequestToServer (const std::string& packetName, DATA_PACKET_TYPES pac
 		clientMessage.message (MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, "An error occurred attempting to send data to server.");
 		return;
 	}
-
-	c_addRequestToQueue (packetName, packetType);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -235,7 +233,7 @@ void c_processServerPacket (ENetPacket *newDataPacket, size_t dataSize)
 			c_convertPacketToAudio (dataPacketIn);
 			break;
 
-		case DATA_PACKET_TYPES::PACKET_SCRIPT:
+		case DATA_PACKET_TYPES::PACKET_INIT_SCRIPT:
 			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Got script packet. Name [ %s ] Size [ %i ].", dataPacketIn.packetString.c_str (), dataPacketIn.binarySize));
 			c_convertPacketToScript(dataPacketIn);
 			break;

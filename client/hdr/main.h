@@ -36,7 +36,7 @@ extern droidWindow        clientWindow;
 extern droidGLFont        clientTestFont;
 extern droidConsole       clientConsole;
 extern droidAudio         clientAudio;
-extern droidScript        clientServerEngine;
+extern droidScript        clientScriptEngine;
 
 extern std::map<std::string, droidTexture> clientTextures;
 

@@ -13,6 +13,10 @@ typedef void      (*scriptFunctionPtrStr) (int, std::string);
 class droidScript
 {
 public:
+
+	void AddRef();
+	void ReleaseRef();
+
 	bool init (asFUNCTION_t scriptOutputFunction);
 
 	std::string getScriptError (int errNo);

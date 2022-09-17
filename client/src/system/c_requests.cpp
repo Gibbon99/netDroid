@@ -3,9 +3,18 @@
 #include "../../hdr/system/c_requests.h"
 #include "../../hdr/main.h"
 
-int                       maxRequestCount{5000};
-int                       requestsFetchDelayMS{50};
+int                       nextRequestTime{1000};
+int                       requestsFetchDelayMS{500};
 std::vector<requestType_> requestQueue{};
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Return how many waiting requests there are
+int c_getNumWaitingRequests ()
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return requestQueue.size ();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -14,7 +23,6 @@ int c_processRequestQueue ([[maybe_unused]]void *param)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	static SDL_mutex *requestsMutex{nullptr};       // Cache the mutex value
-	auto             index{0};
 
 	//
 	// Cache getting the mutex value
@@ -29,23 +37,22 @@ int c_processRequestQueue ([[maybe_unused]]void *param)
 	{
 		if (clientThreads.isThreadReady (EVENT_CLIENT_REQUESTS_THREAD_NAME))
 		{
-
 			SDL_Delay (requestsFetchDelayMS);
 
 			if (!requestQueue.empty ())   // Events in the queue to process
 			{
 				if (clientThreads.lockMutex (requestsMutex))   // Blocks if the mutex is locked by another thread
 				{
-					for (auto requestItr: requestQueue)
+					for (auto &requestItr: requestQueue)
 					{
-						if (gameTime.getTicks () > static_cast<Uint32>(requestItr.requestTime + maxRequestCount))
+						if (gameTime.getTicks () > static_cast<Uint32>(requestItr.requestTime + nextRequestTime))
 						{
+							requestItr.requestTime = gameTime.getTicks ();
+							requestItr.requestCount++;
 							//
-							// Resend request to server TODO
-//							c_sendRequestToServer (requestItr.requestString, requestItr.requestType);
-							requestQueue.erase (requestQueue.begin () + index);
+							// Resend request to server
+							c_sendRequestToServer (requestItr.requestString, requestItr.requestType);
 						}
-						index++;
 					}
 					clientThreads.unLockMutex (requestsMutex);
 				}
@@ -57,7 +64,7 @@ int c_processRequestQueue ([[maybe_unused]]void *param)
 
 //----------------------------------------------------------------------------------------------------------------------
 //
-// A Request has been fulfilled - so remove it from the queue
+// A request has been fulfilled - so remove it from the queue
 void c_removeRequest (std::string_view requestName)
 //----------------------------------------------------------------------------------------------------------------------
 {
@@ -76,7 +83,7 @@ void c_removeRequest (std::string_view requestName)
 	{
 		auto index = 0;
 
-		for (auto requestItr: requestQueue)
+		for (const auto &requestItr: requestQueue)
 		{
 			if (requestItr.requestString == requestName)
 			{

@@ -17,4 +17,4 @@ void s_sendNewClientID(ENetPeer *peerInfo, int newClientID);
 void s_sendMediaToClient (ENetPeer *peerInfo, std::string mediaName, DATA_PACKET_TYPES packetType);
 
 // Send a script file to the client
-void s_sendScriptToClient (int whichClient, std::string scriptName);
+void s_sendScriptToClient (int whichClient, std::string scriptName, DATA_PACKET_TYPES whichScriptType);

@@ -2,6 +2,7 @@
 #include "../../hdr/main.h"
 #include "../../hdr/system/c_events.h"
 #include "../../hdr/system/c_util.h"
+#include "../../hdr/system/c_requests.h"
 
 MODE_TYPES currentMode{MODE_TYPES::MODE_REQUEST_WAIT};
 
@@ -29,6 +30,7 @@ void processClientFrame ()
 				if (!sentInitRequest)
 				{
 					c_sendRequestToServer ("initScript", DATA_PACKET_TYPES::PACKET_REQUEST_INIT_SCRIPT);
+					c_addRequestToQueue ("initScript", DATA_PACKET_TYPES::PACKET_REQUEST_INIT_SCRIPT);
 					c_changeMode (MODE_TYPES::MODE_WAIT_FOR_INIT_SCRIPT);
 					sentInitRequest = true;
 				}
