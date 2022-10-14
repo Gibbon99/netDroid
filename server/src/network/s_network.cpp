@@ -37,7 +37,7 @@ void s_processClientPacket (ENetPacket *newDataPacket, size_t dataSize)
 
 			serverMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString ("Received init script request from client [ %i ].", fromClientID));
 
-			s_sendScriptToClient (dataPacketIn.clientID, serverFileMapping.getfileMappedName ("clientInitScript"), DATA_PACKET_TYPES::PACKET_INIT_SCRIPT);
+			s_sendScriptToClient (dataPacketIn.clientID, dataPacketIn.packetString, serverFileMapping.getfileMappedName ("clientInitScript"), DATA_PACKET_TYPES::PACKET_REQUEST_INIT_SCRIPT);
 			break;
 
 		default:
@@ -250,7 +250,7 @@ void s_sendShaderToClient (ENetPeer *peerInfo, std::string shaderName)
 //----------------------------------------------------------------------------------------------------------------------
 //
 // Send a script file to the client
-void s_sendScriptToClient (int whichClient, std::string scriptName, DATA_PACKET_TYPES whichScriptType)
+void s_sendScriptToClient (int whichClient, std::string clientName, std::string scriptName, DATA_PACKET_TYPES whichScriptType)
 //----------------------------------------------------------------------------------------------------------------------
 {
 	dataPacket newPacket;
@@ -265,7 +265,7 @@ void s_sendScriptToClient (int whichClient, std::string scriptName, DATA_PACKET_
 
 	newPacket.packetType   = whichScriptType;
 	newPacket.packetData   = whichClient;
-	newPacket.packetString = scriptName;
+	newPacket.packetString = clientName;
 	//
 	// Copy script contents into packet
 	newPacket.binaryData.clear ();

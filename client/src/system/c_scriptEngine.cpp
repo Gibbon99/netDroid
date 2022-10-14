@@ -131,8 +131,6 @@ bool c_startScriptEngine ()
 	if (!c_initClassFunctions ())
 		return false;
 
-	printf("Script engine ready to use\n\n");
-
 	return  true;
 }
 
@@ -150,15 +148,19 @@ void c_convertPacketToScript(dataPacket dataPacketIn)
 	{
 		clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("CRC mismatch between script contents. Needed [ %i ] - Got [ %i ]", dataPacketIn.crc, testCRC));
 		//
-		// TODO: Request file again
+		// Remove the request from the queue
+		c_removeRequest(dataPacketIn.packetString);
+		//
+		// Request file again
+		c_addRequestToQueue (dataPacketIn.packetString, dataPacketIn.packetType);
 		return;
 	}
 
 	switch (dataPacketIn.packetType)
 	{
-		case DATA_PACKET_TYPES::PACKET_INIT_SCRIPT:
+		case DATA_PACKET_TYPES::PACKET_REQUEST_INIT_SCRIPT:
 
-			c_removeRequest("initScript");      // Remove the request from the queue
+			c_removeRequest(dataPacketIn.packetString);      // Remove the request from the queue
 
 			clientMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Filename [ %s ]", getFilenameFromString(dataPacketIn.packetString).c_str()));
 			if (!clientScriptEngine.addScript (getFilenameFromString(dataPacketIn.packetString), scriptContents))
@@ -178,14 +180,15 @@ void c_convertPacketToScript(dataPacket dataPacketIn)
 				return;
 			}
 
-			c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_RUN_SCRIPT_FUNCTION, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, "clientInit");
+			c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_RUN_SCRIPT_FUNCTION, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, dataPacketIn.packetString);
 
 			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Contents \n\n %s \n", scriptContents.c_str()));
+
+			clientScripts.push_back (_clientScripts{dataPacketIn.packetString, scriptContents});    // Required??
 			break;
 
 		default:
-			clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Unknown script packet type.").c_str());
+			clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Unknown script packet type."));
 			break;
 	}
-
 }
