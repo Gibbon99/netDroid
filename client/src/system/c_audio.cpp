@@ -11,20 +11,21 @@ void c_convertPacketToAudio (dataPacket newDataPacket)
 	SDL_RWops *rw = SDL_RWFromMem (static_cast<void *>(&newDataPacket.binaryData[0]), newDataPacket.binarySize);
 	if (nullptr == rw)
 	{
-		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString ("Couldn't create audio RWops [ %s ]", SDL_GetError ()));
+		
+		clientMessage.message (MESSAGE_TARGET_STD_OUT, sys_getString (clientLanguage.getMappedString ("clientCreateRWopsFailed"), SDL_GetError ()));
 		return;
 	}
 
 	auto tempChunk = Mix_LoadWAV_RW (rw, 0);
 	if (nullptr == tempChunk)
 	{
-		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("Unable to load audio [ %s ] ; [ %s ]", newDataPacket.packetString.c_str(), Mix_GetError()));
+		clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString(clientLanguage.getMappedString ("clientUnableToLoadAudio"), newDataPacket.packetString.c_str(), Mix_GetError()));
 		return;
 	}
 
 	clientAudio.load (newDataPacket.packetString, tempChunk);
 
-	clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString("Loaded audio from network packet [ %s ]", newDataPacket.packetString.c_str()));
+	clientMessage.message(MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_STD_OUT, sys_getString(clientLanguage.getMappedString ("clientLoadedAudioFromNetwork"), newDataPacket.packetString.c_str()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

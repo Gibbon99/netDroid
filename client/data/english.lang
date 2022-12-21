@@ -1,3 +1,6 @@
 clientStarted#CLIENT Started.
 clientWindowTitle#netDroid Client
 clientUnableCreateWindow#Unable to create the window [ %s ]
+clientCreateRWopsFailed#Couldn't create audio RWops [ %s ]
+clientUnableToLoadAudio#Unable to load audio [ %s ] ; [ %s ]
+clientLoadedAudioFromNetwork#Loaded audio from network packet [ %s ]

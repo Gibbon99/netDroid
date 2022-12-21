@@ -29,6 +29,7 @@
 
 extern droidTime          gameTime;
 extern droidThreadsEngine clientThreads;
+extern droidLanguage      clientLanguage;
 extern droidClient        clientNetworkObject;
 extern networkState       clientNetworkState;
 extern droidMessage       clientMessage;

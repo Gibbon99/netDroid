@@ -1,3 +1,6 @@
 clientStarted#CLIENT Avviato
 clientTitleWindow#Client netDroid
 clientUnableCreateWindow#Impossibile creare la finestra [ %s ]
+clientCreateRWopsFailed#Impossibile creare RWops audio [ %s ]
+clientUnableToLoadAudio#Impossibile caricare l'audio [ %s ] ; [ %s ]
+clientLoadedAudioFromNetwork#Audio caricato dal pacchetto di rete [ %s ]
