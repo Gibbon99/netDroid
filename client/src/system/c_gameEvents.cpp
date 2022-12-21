@@ -70,7 +70,7 @@ void c_processGameEventQueue ()
 					return;
 				}
 
-				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, "After running clientInit function in script");
+				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("After running function [ %s ] in script", tempEventData.eventString.c_str()));
 
 				break;
 

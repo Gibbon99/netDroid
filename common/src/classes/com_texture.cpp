@@ -1,6 +1,6 @@
-#include <SDL_system.h>
+#include <SDL2/SDL_system.h>
 #include <string>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include "com_texture.h"
 #include "com_util.h"
 #include "../../../client/hdr/openGL/c_glDebug.h"
@@ -178,6 +178,10 @@ bool droidTexture::convertToTexture ()
 
 	textureState = TEXTURE_LOADED;
 	lastError = "";
+
+printf("Converted texture to OpenGL format,\n");
+
+
 	return true;
 }
 

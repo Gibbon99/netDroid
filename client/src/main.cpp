@@ -15,8 +15,8 @@ droidLanguage      clientLanguage{};
 networkState       clientNetworkState{};
 droidGLFont        clientTestFont{};
 droidConsole       clientConsole{2, 1, 1, 1, 1};
-droidAudio  clientAudio{};
-droidScript clientScriptEngine{};
+droidAudio  	   clientAudio{};
+droidScript 	   clientScriptEngine{};
 
 std::map<std::string, droidTexture> clientTextures{};
 

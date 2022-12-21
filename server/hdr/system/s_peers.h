@@ -11,3 +11,6 @@ extern std::vector<peerInformation>    peers;
 //
 // Return the new peer ID - index into the array
 int addNewPeer(ENetPeer *newPeer);
+
+// Return the ENET peer information from the vector using the clientID index
+ENetPeer *getPeerFromClientID(int whichClientID);

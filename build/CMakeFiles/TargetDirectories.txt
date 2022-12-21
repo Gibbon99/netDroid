@@ -1,0 +1,4 @@
+/home/dberry/Devel-GIT/netDroid/build/CMakeFiles/netClient-Debug.dir
+/home/dberry/Devel-GIT/netDroid/build/CMakeFiles/netServer-Debug.dir
+/home/dberry/Devel-GIT/netDroid/build/CMakeFiles/edit_cache.dir
+/home/dberry/Devel-GIT/netDroid/build/CMakeFiles/rebuild_cache.dir

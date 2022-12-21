@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL_mutex.h>
+#include <SDL2/SDL_mutex.h>
 
 enum class networkStates
 {

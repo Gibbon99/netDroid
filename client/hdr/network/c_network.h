@@ -2,7 +2,7 @@
 
 #include "enet/enet.h"
 #include "com_globals.h"
-#include <SDL_mutex.h>
+#include <SDL2/SDL_mutex.h>
 #include "classes/com_threadsEngine.h"
 #include "com_netEvents.h"
 #include "com_texture.h"

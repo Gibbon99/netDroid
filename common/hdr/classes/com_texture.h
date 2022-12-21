@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <vector>
 #include <string>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 enum TEXTURE_STATE
 {

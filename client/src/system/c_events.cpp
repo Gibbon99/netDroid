@@ -30,10 +30,10 @@ void c_addEventToQueue (EventType type, EventAction action, int newDelayCounter,
 			break;
 
 		case EventType::EVENT_CONSOLE:
-			if (clientThreads.lockMutex (MAIN_LOOP_MUTEX))
+			if (clientThreads.lockMutex (CONSOLE_MUTEX_NAME))
 			{
 				gameEventQueue.push (eventData);
-				clientThreads.unLockMutex (MAIN_LOOP_MUTEX);
+				clientThreads.unLockMutex (CONSOLE_MUTEX_NAME);
 			}
 			break;
 	}

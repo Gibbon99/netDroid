@@ -2,7 +2,7 @@
 
 #include <string>
 #include <queue>
-#include <SDL_events.h>
+#include <SDL2/SDL_events.h>
 #include "vec2.hpp"
 #include "enet/enet.h"
 #include "../../hdr/main.h"

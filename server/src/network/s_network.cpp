@@ -1,6 +1,6 @@
 #include <iostream>
 #include <utility>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include "../../hdr/network/s_network.h"
 #include "../../hdr/system/s_peers.h"
 #include "../../hdr/main.h"
@@ -38,6 +38,12 @@ void s_processClientPacket (ENetPacket *newDataPacket, size_t dataSize)
 			serverMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString ("Received init script request from client [ %i ].", fromClientID));
 
 			s_sendScriptToClient (dataPacketIn.clientID, dataPacketIn.packetString, serverFileMapping.getfileMappedName ("clientInitScript"), DATA_PACKET_TYPES::PACKET_REQUEST_INIT_SCRIPT);
+			break;
+
+		case DATA_PACKET_TYPES::PACKET_IMAGE:
+			serverMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE | MESSAGE_TARGET_LOGFILE, sys_getString("Received PACKET_IMAGE [ %s ] request from client [ %i ].", dataPacketIn.packetString.c_str(), fromClientID));
+
+			s_sendMediaToClient (getPeerFromClientID(dataPacketIn.clientID), dataPacketIn.packetString, DATA_PACKET_TYPES::PACKET_IMAGE);
 			break;
 
 		default:
@@ -92,7 +98,7 @@ int s_processEventNetworkThread ([[maybe_unused]]void *param)
 							serverMessage.message (MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString ("\nA new client CONNECTED from %s:%u.", getHostnameFromAddress (networkEvent.networkEvent.peer->address).c_str (), networkEvent.networkEvent.peer->address.port));
 							newClientID = addNewPeer (networkEvent.networkEvent.peer);
 
-							s_sendNewClientID (networkEvent.networkEvent.peer, newClientID);
+							s_sendNewClientID (getPeerFromClientID(newClientID), newClientID);
 
 //							s_sendMediaToClient (networkEvent.networkEvent.peer, "splash", DATA_PACKET_TYPES::PACKET_IMAGE);
 //							s_sendMediaToClient (networkEvent.networkEvent.peer, "scrollBeeps", DATA_PACKET_TYPES::PACKET_AUDIO);

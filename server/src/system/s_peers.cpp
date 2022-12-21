@@ -22,3 +22,12 @@ int addNewPeer (ENetPeer *newPeer)
 
 	return static_cast<int>(peers.size () - 1);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+//
+// Return the ENET peer information from the vector using the clientID index
+ENetPeer *getPeerFromClientID(int whichClientID)
+//----------------------------------------------------------------------------------------------------------------------
+{
+	return &peers[whichClientID].peerInfo;
+}

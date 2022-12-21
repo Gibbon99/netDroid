@@ -1,8 +1,8 @@
-Logfile [ clientLogfile.log ] opened [ 17-09-2022 ]
-[ 16:49:38 ] Console started.
-[ 16:49:39 ] Script engine started. Version [ 2.35.1 ] Options [  AS_64BIT_PTR AS_LINUX AS_X64_GCC  ]
-[ 16:49:39 ] Network library started.
-[ 16:49:39 ] Shader [ 2DQuad ] linked and compiled ok.
-[ 16:49:39 ] Attempt connection to server...
-[ 16:49:39 ] Connection request sent to server.
-[ 16:49:40 ] Connected to server.
+Logfile [ clientLogfile.log ] opened [ 10-12-2022 ]
+[ 21:19:38 ] Console started.
+[ 21:19:38 ] Network library started.
+[ 21:19:38 ] Script engine started. Version [ 2.35.1 ] Options [  AS_64BIT_PTR AS_LINUX AS_X64_GCC  ]
+[ 21:19:39 ] Attempt connection to server...
+[ 21:19:39 ] Connection request sent to server.
+[ 21:19:39 ] Shader [ 2DQuad ] linked and compiled ok.
+[ 21:19:40 ] Connected to server.

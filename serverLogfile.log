@@ -1,84 +1,54 @@
-Logfile [ serverLogfile.log ] opened [ 17-09-2022 ]
-[ 16:47:14 ] SERVER Started update.
-[ 16:47:14 ] INFO : Signal handler installed.
-[ 16:47:15 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].
-[ 16:47:15 ] Script engine started. Version [ 2.35.1 ] Options [  AS_64BIT_PTR AS_LINUX AS_X64_GCC  ]
-[ 16:47:15 ] Script files to load and compile.
-[ 16:47:15 ] Loaded file [ DarkestHour ] : [ 35788 ]
-[ 16:47:15 ] Loaded file [ cylon ] : [ 50005 ]
-[ 16:47:15 ] Loaded file [ splash ] : [ 30285 ]
-[ 16:47:15 ] Loaded file [ collision1 ] : [ 44308 ]
-[ 16:47:15 ] Loaded file [ console1 ] : [ 52612 ]
-[ 16:47:15 ] Loaded file [ console2 ] : [ 24544 ]
-[ 16:47:16 ] Loaded file [ doorOpen ] : [ 163476 ]
-[ 16:47:16 ] Loaded file [ doorClose ] : [ 141356 ]
-[ 16:47:16 ] Loaded file [ disruptor ] : [ 49328 ]
-[ 16:47:16 ] Loaded file [ damage ] : [ 83316 ]
-[ 16:47:16 ] Loaded file [ explode1 ] : [ 126764 ]
-[ 16:47:16 ] Loaded file [ explode2 ] : [ 47692 ]
-[ 16:47:17 ] Loaded file [ energyHeal ] : [ 361948 ]
-[ 16:47:17 ] Loaded file [ endTransmission2 ] : [ 847916 ]
-[ 16:47:18 ] Loaded file [ endTransmission1 ] : [ 219216 ]
-[ 16:47:18 ] Loaded file [ greenAlert ] : [ 311008 ]
-[ 16:47:18 ] Loaded file [ lift1 ] : [ 141720 ]
-[ 16:47:18 ] Loaded file [ keyPressGood ] : [ 25680 ]
-[ 16:47:18 ] Loaded file [ keyPressBad ] : [ 4220 ]
-[ 16:47:18 ] Loaded file [ laser ] : [ 30552 ]
-[ 16:47:18 ] Loaded file [ lowEnergy ] : [ 107584 ]
-[ 16:47:18 ] Loaded file [ lift2 ] : [ 90180 ]
-[ 16:47:18 ] Loaded file [ lift3 ] : [ 90716 ]
-[ 16:47:18 ] Loaded file [ levelShutdown ] : [ 193988 ]
-[ 16:47:18 ] Loaded file [ redAlert ] : [ 326872 ]
-[ 16:47:19 ] Loaded file [ startAll ] : [ 1020564 ]
-[ 16:47:19 ] Loaded file [ start2 ] : [ 275960 ]
-[ 16:47:19 ] Loaded file [ start1 ] : [ 680396 ]
-[ 16:47:21 ] Loaded file [ scrollBeeps ] : [ 2434540 ]
-[ 16:47:21 ] Loaded file [ transferdeadlock ] : [ 226336 ]
-[ 16:47:21 ] Loaded file [ transferMove ] : [ 53240 ]
-[ 16:47:21 ] Loaded file [ transferStage1 ] : [ 352844 ]
-[ 16:47:21 ] Loaded file [ transferStage2 ] : [ 461208 ]
-[ 16:47:21 ] Loaded file [ transfer1 ] : [ 48956 ]
-[ 16:47:22 ] Loaded file [ transferStart ] : [ 446848 ]
-[ 16:47:22 ] Loaded file [ yellowAlert ] : [ 323616 ]
-[ 16:47:22 ] Loaded file [ transferBurntout ] : [ 260634 ]
-[ 16:47:22 ] Loaded file [ transferAction ] : [ 31350 ]
-[ 16:47:22 ] Loaded file [ liftButton ] : [ 48044 ]
-[ 16:47:29 ] 
-A new client CONNECTED from localhost:50993.
-[ 16:47:30 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:30 ] Received init script request from client [ 0 ].
-[ 16:47:32 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:32 ] Received init script request from client [ 0 ].
-[ 16:47:33 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:33 ] Received init script request from client [ 0 ].
-[ 16:47:34 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:34 ] Received init script request from client [ 0 ].
-[ 16:47:35 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:35 ] Received init script request from client [ 0 ].
-[ 16:47:36 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:36 ] Received init script request from client [ 0 ].
-[ 16:47:38 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:38 ] Received init script request from client [ 0 ].
-[ 16:47:39 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:39 ] Received init script request from client [ 0 ].
-[ 16:47:40 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:40 ] Received init script request from client [ 0 ].
-[ 16:47:41 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:41 ] Received init script request from client [ 0 ].
-[ 16:47:43 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:47:43 ] Received init script request from client [ 0 ].
-[ 16:47:53 ] localhost disconnected.
+Logfile [ serverLogfile.log ] opened [ 10-12-2022 ]
+[ 21:19:11 ] SERVER Started update.
+[ 21:19:11 ] INFO : Signal handler installed.
+[ 21:19:11 ] Server [ 127.0.0.1 ] listening on port [ 1234 ].
+[ 21:19:12 ] Script engine started. Version [ 2.35.1 ] Options [  AS_64BIT_PTR AS_LINUX AS_X64_GCC  ]
+[ 21:19:12 ] Script files to load and compile.
+[ 21:19:12 ] Loaded file [ DarkestHour ] : [ 35788 ]
+[ 21:19:12 ] Unable to load [ cylon ] : [ Unable to open file [ server/data/images/cylon.jpg ]. ]
+[ 21:19:12 ] Loaded file [ splash ] : [ 30975 ]
+[ 21:19:12 ] Loaded file [ collision1 ] : [ 44308 ]
+[ 21:19:12 ] Loaded file [ console1 ] : [ 52612 ]
+[ 21:19:12 ] Loaded file [ console2 ] : [ 24544 ]
+[ 21:19:12 ] Loaded file [ doorOpen ] : [ 163476 ]
+[ 21:19:12 ] Loaded file [ doorClose ] : [ 141356 ]
+[ 21:19:12 ] Loaded file [ disruptor ] : [ 49328 ]
+[ 21:19:12 ] Loaded file [ damage ] : [ 83316 ]
+[ 21:19:13 ] Loaded file [ explode1 ] : [ 126764 ]
+[ 21:19:13 ] Loaded file [ explode2 ] : [ 47692 ]
+[ 21:19:13 ] Loaded file [ energyHeal ] : [ 361948 ]
+[ 21:19:14 ] Loaded file [ endTransmission2 ] : [ 847916 ]
+[ 21:19:14 ] Loaded file [ endTransmission1 ] : [ 219216 ]
+[ 21:19:15 ] Loaded file [ greenAlert ] : [ 311008 ]
+[ 21:19:15 ] Loaded file [ lift1 ] : [ 141720 ]
+[ 21:19:15 ] Loaded file [ keyPressGood ] : [ 25680 ]
+[ 21:19:15 ] Loaded file [ keyPressBad ] : [ 4220 ]
+[ 21:19:15 ] Loaded file [ laser ] : [ 30552 ]
+[ 21:19:15 ] Loaded file [ lowEnergy ] : [ 107584 ]
+[ 21:19:15 ] Loaded file [ lift2 ] : [ 90180 ]
+[ 21:19:15 ] Loaded file [ lift3 ] : [ 90716 ]
+[ 21:19:16 ] Loaded file [ levelShutdown ] : [ 193988 ]
+[ 21:19:16 ] Loaded file [ redAlert ] : [ 326872 ]
+[ 21:19:17 ] Loaded file [ startAll ] : [ 1020564 ]
+[ 21:19:18 ] Loaded file [ start2 ] : [ 275960 ]
+[ 21:19:19 ] Loaded file [ start1 ] : [ 680396 ]
+[ 21:19:22 ] Loaded file [ scrollBeeps ] : [ 2434540 ]
+[ 21:19:22 ] Loaded file [ transferdeadlock ] : [ 226336 ]
+[ 21:19:22 ] Loaded file [ transferMove ] : [ 53240 ]
+[ 21:19:22 ] Loaded file [ transferStage1 ] : [ 352844 ]
+[ 21:19:23 ] Loaded file [ transferStage2 ] : [ 461208 ]
+[ 21:19:23 ] Loaded file [ transfer1 ] : [ 48956 ]
+[ 21:19:24 ] Loaded file [ transferStart ] : [ 446848 ]
+[ 21:19:24 ] Loaded file [ yellowAlert ] : [ 323616 ]
+[ 21:19:24 ] Loaded file [ transferBurntout ] : [ 260634 ]
+[ 21:19:24 ] Loaded file [ transferAction ] : [ 31350 ]
+[ 21:19:24 ] Loaded file [ liftButton ] : [ 48044 ]
+[ 21:19:39 ] 
+A new client CONNECTED from localhost:54136.
+[ 21:19:40 ] A packet of length 21 containing = was received from (null) on channel 0.
+[ 21:19:40 ] Received init script request from client [ 0 ].
+[ 21:19:40 ] A packet of length 15 containing 9 was received from (null) on channel 0.
+[ 21:19:40 ] Received PACKET_IMAGE [ splash ] request from client [ 0 ].
+[ 21:20:06 ] localhost disconnected.
 
-[ 16:48:17 ] 
-A new client CONNECTED from localhost:47946.
-[ 16:48:18 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:48:18 ] Received init script request from client [ 1 ].
-[ 16:48:45 ] localhost disconnected.
-
-[ 16:49:39 ] 
-A new client CONNECTED from localhost:54863.
-[ 16:49:43 ] A packet of length 21 containing = was received from (null) on channel 0.
-[ 16:49:43 ] Received init script request from client [ 2 ].
-[ 16:50:13 ] localhost disconnected.
-
-[ 20:19:25 ] Interrupt signal [ 2 ] received.
+[ 21:20:08 ] Interrupt signal [ 2 ] received.

@@ -38,6 +38,7 @@ void processClientFrame ()
 			break;
 
 		case MODE_TYPES::MODE_WAIT_FOR_INIT_SCRIPT:
+			c_changeMode (MODE_TYPES::MODE_SPLASH_SCREEN);
 			break;
 
 		case MODE_TYPES::MODE_LOAD_RESOURCES:

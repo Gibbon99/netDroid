@@ -106,6 +106,13 @@ bool c_initClassFunctions ()
 		return false;
 	}
 
+
+	if (!clientScriptEngine.addHostFunction("void c_sendRequestToServer(string packetName, int packetType)", asFUNCTION(c_sendRequestToServer)))
+	{
+		clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_LOGFILE, sys_getString("Failed to add host based function : [ %s ].", clientScriptEngine.getLastError().c_str()));
+		return false;		
+	}
+
 	return true;
 }
 
@@ -168,6 +175,7 @@ void c_convertPacketToScript(dataPacket dataPacketIn)
 				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Error adding a new script - [ %s ]", clientScriptEngine.getLastError().c_str()));
 				return;
 			}
+
 			if (!clientScriptEngine.compileModule())
 			{
 				clientMessage.message(MESSAGE_TARGET_STD_OUT | MESSAGE_TARGET_CONSOLE, sys_getString("Error compiling script module - [ %s ]", clientScriptEngine.getLastError().c_str()));
@@ -180,7 +188,8 @@ void c_convertPacketToScript(dataPacket dataPacketIn)
 				return;
 			}
 
-			c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_RUN_SCRIPT_FUNCTION, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, dataPacketIn.packetString);
+//			c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_RUN_SCRIPT_FUNCTION, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, dataPacketIn.packetString);
+			c_addEventToQueue (EventType::EVENT_GAME_LOOP, EventAction::ACTION_RUN_SCRIPT_FUNCTION, 0, 0, 0, 0, glm::vec2{}, glm::vec2{}, "clientInit");
 
 			clientMessage.message (MESSAGE_TARGET_DEBUG, sys_getString ("Contents \n\n %s \n", scriptContents.c_str()));
 

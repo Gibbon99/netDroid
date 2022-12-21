@@ -3,9 +3,9 @@
 #include <vector>
 #include <string>
 #include <queue>
-#include <SDL_timer.h>
-#include <SDL_mutex.h>
-#include <SDL_thread.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_mutex.h>
+#include <SDL2/SDL_thread.h>
 #include "com_util.h"
 
 //
